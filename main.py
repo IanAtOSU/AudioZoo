@@ -1,12 +1,13 @@
 import sys, pygame
 import os
+import sprite
 #If mixer glitches and gives you an error like "pygame.error: Failed loading libmpg123-0.dll: The specified module could not be found." try finding your pygame directory and adding something like the below
 #os.add_dll_directory("C://Users/mrper_ssam80a/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.9_qbz5n2kfra8p0/LocalCache/local-packages/Python39/site-packages/pygame")
 pygame.init()
 pygame.mixer.init()
 
 #set up screen
-size = width, height = 900, 900
+size = width, height = 800, 800
 screen = pygame.display.set_mode(size)
 
 #create arrays of sprites
