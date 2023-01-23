@@ -29,6 +29,10 @@ class sprite():
         #this method should be triggered on click
         return 0
     
-    def move(self):
+    def move(self, width, height):
         #TODO move sprites
-        return 0
+        # Reese Clifford: Added a function to change the size of sprites
+
+        # Uses the transform module that pygame provides to resize the image
+        self.image = pygame.transform.scale(self.image, (width, height))
+        self.rect = self.image.get_rect()
