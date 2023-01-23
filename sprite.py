@@ -1,5 +1,4 @@
 import pygame
-import wave
 
 
 class sprite():
@@ -14,11 +13,14 @@ class sprite():
         return self.image
     def set_image(self, new_image):
         self.image = pygame.image.load(new_image)
+    
     def get_rect(self):
         return self.rect
 
-    def get_sound(self):
+    def get_orig_sound(self):
         return self.orig_sound_file
+    def get_mod_sound(self):
+        return self.mod_sound_file
     def set_sound(self, new_file):
         self.mod_sound_file = new_file
     
@@ -30,7 +32,3 @@ class sprite():
     def move(self):
         #TODO move sprites
         return 0
-    
-
-
-    
