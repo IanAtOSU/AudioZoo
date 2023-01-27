@@ -13,7 +13,9 @@ screen = pygame.display.set_mode(size)
 
 #Create a sprite
 sprites = [sprite.sprite("Sprites/sprite0.gif", "Sounds/bruh.mp3"), sprite.sprite("Sprites/sprite1.gif", "Sounds/emergency.mp3")]
-dragging = [False,0]
+dragging = False
+initmousepos=[0,0]#initial position of mouse when clicking on sprite, used to calculate where the sprite should be
+initspritepos=[0,0]#initial position of sprite when clicking on sprite
 #position sprites on screen. 
 
 
@@ -22,16 +24,23 @@ while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            for i in range(len(sprites)):#play corresponding sound to sprite clicked on
+            for i in range(len(sprites)-1,-1,-1):#play corresponding sound to sprite clicked on, prioritize sprites displayed last/on top
                 if sprites[i].rect.collidepoint(pygame.mouse.get_pos()):
-                    dragging = [True,i]
+                    mouse_x,mouse_y=event.pos
+                    dragging = True
+                    initmousepos=[mouse_x,mouse_y]
+                    initspritepos=[sprites[i].rect.x,sprites[i].rect.y]
                     pygame.mixer.Sound(sprites[i].get_mod_sound()).play();
+                    tmp=sprites[i]#give the object clicked on top priority
+                    sprites.remove(tmp)
+                    sprites.append(tmp)
+                    break;#only interact with the first sprite found
         elif event.type == pygame.MOUSEBUTTONUP:
-            dragging[0] = False
-        elif event.type == pygame.MOUSEMOTION and dragging[0]:
+            dragging = False
+        elif event.type == pygame.MOUSEMOTION and dragging:
             mouse_x,mouse_y = event.pos
-            sprites[dragging[1]].rect.x = mouse_x
-            sprites[dragging[1]].rect.y = mouse_y
+            sprites[len(sprites)-1].rect.x = initspritepos[0]+mouse_x-initmousepos[0]#object being dragged is always the last one
+            sprites[len(sprites)-1].rect.y = initspritepos[1]+mouse_y-initmousepos[1]
 
     screen.fill((0,0,0))
     for i in range(len(sprites)):
