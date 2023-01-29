@@ -51,10 +51,21 @@ def changePitch(audio_path, Hz_shift):
     audioIn.close()
     audioOut.close() 
 
+def changeSpeed(audio_path, multiplier):
+    audioIn = wave.open("Sounds/" + audio_path, 'rb')
+    rate = audioIn.getframerate()
+    frames = audioIn.readframes(-1)
+    os.remove("audioOutput/" + audio_path) #Ensure that this file isn't already there
+    audioOut = wave.open("audioOutput/" + audio_path, 'wb')
+
+    audioOut.setparams(audioIn.getparams())
+    audioOut.setframerate(rate*multiplier)
+    audioOut.writeframes(frames)
+    audioIn.close()
+    audioOut.close()
 
 
-
-
-changeVolume("testAudio.wav", 0.25)
-changePitch("testAudio.wav", -100)
+changeVolume("TestAudio.wav", 0.25)
+changePitch("TestAudio.wav", -100)
+changeSpeed("TestAudio.wav", 2)
 
