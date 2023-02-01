@@ -8,8 +8,9 @@ pygame.init()
 pygame.mixer.init()
 
 #set up screen
-size = width, height = 800, 800
+size = width, height = 1000, 700
 screen = pygame.display.set_mode(size)
+BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1000,700))
 
 #Create a sprite
 sprites = [sprite.sprite("Sprites/sprite0.gif", "Sounds/bruh.mp3"), sprite.sprite("Sprites/sprite1.gif", "Sounds/emergency.mp3")]
@@ -56,6 +57,7 @@ while True:
             sprites[len(sprites)-1].rect.y = initspritepos[1]+mouse_y-initmousepos[1]
 
     screen.fill((0,0,0))
+    screen.blit(BG, (0,0))
     for i in range(len(sprites)):
         screen.blit(sprites[i].image, sprites[i].rect)
     pygame.display.flip()

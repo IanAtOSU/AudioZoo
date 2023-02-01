@@ -6,8 +6,12 @@ class sprite():
     pitch = 1
     speed = 1
 
+    width = 30
+    height = 30
+
     def __init__(self, image, sound_file):
         self.image = pygame.image.load(image)
+        self.image = pygame.transform.scale(self.image, (self.width, self.height))
         self.rect = self.image.get_rect()
         self.orig_sound_file = sound_file
         self.mod_sound_file = sound_file
@@ -33,10 +37,11 @@ class sprite():
         #this method should be triggered on click
         return 0
     
-    def move(self, width, height):
+    def scale(self, width, height):
         #TODO move sprites
         # Reese Clifford: Added a function to change the size of sprites
 
         # Uses the transform module that pygame provides to resize the image
         self.image = pygame.transform.scale(self.image, (width, height))
         self.rect = self.image.get_rect()
+
