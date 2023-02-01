@@ -16,25 +16,31 @@ sprites = [sprite.sprite("Sprites/sprite0.gif", "Sounds/bruh.mp3"), sprite.sprit
 dragging = False
 initmousepos=[0,0]#initial position of mouse when clicking on sprite, used to calculate where the sprite should be
 initspritepos=[0,0]#initial position of sprite when clicking on sprite
-#position sprites on screen. 
+#position sprites on screen.
 
+selected_sprite = sprites[0]
+
+def check_for_drag(): 
+    global dragging, mouse_x, mouse_y, initmousepos, initspritepos, sprites
+    for i in range(len(sprites)-1,-1,-1):#play corresponding sound to sprite clicked on, prioritize sprites displayed last/on top
+        if sprites[i].rect.collidepoint(pygame.mouse.get_pos()):
+            mouse_x,mouse_y=event.pos
+            dragging = True
+            initmousepos=[mouse_x,mouse_y]
+            initspritepos=[sprites[i].rect.x,sprites[i].rect.y]
+            pygame.mixer.Sound(sprites[i].get_mod_sound()).play()
+            tmp=sprites[i] #give the object clicked on top priority
+            sprites.remove(tmp)
+            sprites.append(tmp)
+            break #only interact with the first sprite found
+    return tmp
 
 #game loop
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            for i in range(len(sprites)-1,-1,-1):#play corresponding sound to sprite clicked on, prioritize sprites displayed last/on top
-                if sprites[i].rect.collidepoint(pygame.mouse.get_pos()):
-                    mouse_x,mouse_y=event.pos
-                    dragging = True
-                    initmousepos=[mouse_x,mouse_y]
-                    initspritepos=[sprites[i].rect.x,sprites[i].rect.y]
-                    pygame.mixer.Sound(sprites[i].get_mod_sound()).play();
-                    tmp=sprites[i]#give the object clicked on top priority
-                    sprites.remove(tmp)
-                    sprites.append(tmp)
-                    break;#only interact with the first sprite found
+            selected_sprite = check_for_drag()
         elif event.type == pygame.MOUSEBUTTONUP:
             dragging = False
         elif event.type == pygame.MOUSEMOTION and dragging:

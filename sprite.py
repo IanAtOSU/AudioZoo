@@ -2,6 +2,10 @@ import pygame
 
 
 class sprite():
+    volume = 1
+    pitch = 1
+    speed = 1
+
     def __init__(self, image, sound_file):
         self.image = pygame.image.load(image)
         self.rect = self.image.get_rect()
