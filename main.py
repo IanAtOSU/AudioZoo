@@ -1,11 +1,31 @@
-import sys, pygame
+import sys
 import os
-
+import pygame
 import sprite
+import random
 #If mixer glitches and gives you an error like "pygame.error: Failed loading libmpg123-0.dll: The specified module could not be found." try finding your pygame directory and adding something like the below
 #os.add_dll_directory("C://Users/mrper_ssam80a/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.9_qbz5n2kfra8p0/LocalCache/local-packages/Python39/site-packages/pygame")
 pygame.init()
 pygame.mixer.init()
+pygame.font.init()
+game_font=pygame.font.SysFont("Times New Roman",30)
+
+class textBox:
+    def __init__(self,name="",locationsize=(0,0,100,20),background=(255,255,255),border=(0,0,0),textcolor=(0,0,0),text=""):
+        self.name=name
+        self.locationsize=locationsize
+        self.background=background
+        self.border=border
+        self.textcolor=textcolor
+        self.text=text
+    def draw(self):
+        pygame.draw.rect(screen,self.background,self.locationsize)
+        pygame.draw.rect(screen,self.border,self.locationsize,width=1)
+        text_surface=game_font.render(self.text,False,self.textcolor)
+        screen.blit(text_surface,(self.locationsize[0],self.locationsize[1]))
+        pygame.display.flip()
+    def within(self,x,y):
+        return x>=self.locationsize[0] and x<=self.locationsize[0]+self.locationsize[2] and y>=self.locationsize[1] and y<=self.locationsize[1]+self.locationsize[3]
 
 #set up screen
 size = width, height = 1000, 700
@@ -20,6 +40,10 @@ initspritepos=[0,0]#initial position of sprite when clicking on sprite
 mouse_x = 0
 mouse_y = 0
 #position sprites on screen.
+
+#Create textbox for adding sprites
+addSpriteButton=textBox(name="addSprite",locationsize=(50,height-50,250,50),text="Add a sprite")
+buttons = [addSpriteButton]
 
 selected_sprite = sprites[0]
 
@@ -60,4 +84,6 @@ while True:
     screen.blit(BG, (0,0))
     for i in range(len(sprites)):
         screen.blit(sprites[i].image, sprites[i].rect)
+    for button in buttons:
+        button.draw()#buttons go over sprites
     pygame.display.flip()
