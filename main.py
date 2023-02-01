@@ -1,13 +1,11 @@
 import sys
 import os
-<<<<<<< HEAD
-
 import sprite, sliders
-=======
 import pygame
 import sprite
 import random
->>>>>>> c78cc07964d0ff2afd6fee1a139d6d46a7c2fe6b
+
+
 #If mixer glitches and gives you an error like "pygame.error: Failed loading libmpg123-0.dll: The specified module could not be found." try finding your pygame directory and adding something like the below
 #os.add_dll_directory("C://Users/mrper_ssam80a/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.9_qbz5n2kfra8p0/LocalCache/local-packages/Python39/site-packages/pygame")
 pygame.init()
@@ -42,7 +40,6 @@ sprites = [sprite.sprite("Sprites/sprite0.gif", "Sounds/bruh.mp3"), sprite.sprit
 dragging = False
 initmousepos=[0,0]#initial position of mouse when clicking on sprite, used to calculate where the sprite should be
 initspritepos=[0,0]#initial position of sprite when clicking on sprite
-<<<<<<< HEAD
 
 sliders = [sliders.slider(700, 400, 600)]
 
@@ -50,7 +47,6 @@ def check_sprite_clicked():
     global dragging, initmousepos, initspritepos
     tmp = None
     #mouse_x,mouse_y = 0
-=======
 mouse_x = 0
 mouse_y = 0
 #position sprites on screen.
@@ -64,19 +60,15 @@ selected_sprite = sprites[0]
 def check_for_drag(): 
     global dragging, mouse_x, mouse_y, initmousepos, initspritepos, sprites
     tmp = None
->>>>>>> c78cc07964d0ff2afd6fee1a139d6d46a7c2fe6b
     for i in range(len(sprites)-1,-1,-1):#play corresponding sound to sprite clicked on, prioritize sprites displayed last/on top
         if sprites[i].rect.collidepoint(pygame.mouse.get_pos()):
             mouse_x,mouse_y=event.pos
             dragging = True
             initmousepos=[mouse_x,mouse_y]
             initspritepos=[sprites[i].rect.x,sprites[i].rect.y]
-<<<<<<< HEAD
             pygame.mixer.Sound(sprites[i].get_mod_sound()).play();
             tmp=sprites[i]#give the object clicked on top priority
-=======
             tmp=sprites[i] #give the object clicked on top priority
->>>>>>> c78cc07964d0ff2afd6fee1a139d6d46a7c2fe6b
             sprites.remove(tmp)
             sprites.append(tmp)
             break;#only interact with the first sprite found
@@ -106,13 +98,10 @@ while True:
     screen.blit(BG, (0,0))
     for i in range(len(sprites)):
         screen.blit(sprites[i].image, sprites[i].rect)
-<<<<<<< HEAD
 
     pygame.draw.circle(screen, 'Blue', (sliders[0].x, sliders[0].y), 5)
     pygame.draw.rect(screen, 'Grey', [sliders[0].minX, sliders[0].y, sliders[0].maxX - sliders[0].minX, 10])
 
-=======
     for button in buttons:
         button.draw()#buttons go over sprites
->>>>>>> c78cc07964d0ff2afd6fee1a139d6d46a7c2fe6b
     pygame.display.flip()
