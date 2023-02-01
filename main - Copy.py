@@ -1,6 +1,5 @@
 import sys
 import os
-import sprite, sliders
 import pygame
 import sprite
 import random
@@ -42,8 +41,6 @@ initmousepos=[0,0]#initial position of mouse when clicking on sprite, used to ca
 initspritepos=[0,0]#initial position of sprite when clicking on sprite
 mouse_x = 0
 mouse_y = 0
-sliders = [sliders.slider(700, 400, 600)]
-
 #position sprites on screen.
 
 #Create textbox for adding sprites
@@ -67,10 +64,6 @@ def check_for_drag():
             break #only interact with the first sprite found
     return tmp
 
-def drag_sprite(mouse_x, mouse_y):
-    sprites[len(sprites)-1].rect.x = initspritepos[0]+mouse_x-initmousepos[0]#object being dragged is always the last one
-    sprites[len(sprites)-1].rect.y = initspritepos[1]+mouse_y-initmousepos[1]
-
 #game loop
 while True:
     for event in pygame.event.get():
@@ -86,21 +79,13 @@ while True:
             
         elif event.type == pygame.MOUSEMOTION and dragging:
             mouse_x,mouse_y = event.pos
-            drag_sprite(mouse_x, mouse_y)
-            
+            sprites[len(sprites)-1].rect.x = initspritepos[0]+mouse_x-initmousepos[0]#object being dragged is always the last one
+            sprites[len(sprites)-1].rect.y = initspritepos[1]+mouse_y-initmousepos[1]
+
     screen.fill((0,0,0))
     screen.blit(BG, (0,0))
-    
-    #Draw Sprites
     for i in range(len(sprites)):
         screen.blit(sprites[i].image, sprites[i].rect)
-    
-    #Draw Buttons
     for button in buttons:
         button.draw()#buttons go over sprites
     pygame.display.flip()
-
-    #Draw Sliders
-    pygame.draw.circle(screen, 'Blue', (sliders[0].x, sliders[0].y), 5)
-    pygame.draw.rect(screen, 'Grey', [sliders[0].minX, sliders[0].y, sliders[0].maxX - sliders[0].minX, 10])
-
