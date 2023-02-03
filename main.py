@@ -76,7 +76,7 @@ widgets = [slider(400, 600, 700)]
 #position sprites on screen.
 
 #Create textbox for adding sprites
-addSpriteButton=textBox(name="addSprite",locationsize=(50,height-50,250,50),text="Add a sprite")
+addSpriteButton = textBox(name="addSprite",locationsize=(50,height-50,250,50),text="Add a sprite")
 buttons = [addSpriteButton]
 
 selected_sprite = sprites[0]
@@ -106,16 +106,20 @@ while True:
         if event.type == pygame.QUIT: sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             selected_sprite = check_for_drag()
+            for button in buttons:
+                if button.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+                    print("click")
+                    if button.name=="addSprite":#add sprite button
+                        potentialsprites=os.listdir("Sprites")
+                        potentialsounds=os.listdir("Sounds")
+                        sprites.append(sprite("Sprites/"+potentialsprites[random.randint(0,len(potentialsprites)-1)],"Sounds/"+potentialsounds[random.randint(0,len(potentialsounds)-1)]))
         elif event.type == pygame.MOUSEBUTTONUP:
             dragging = False
             if abs(mouse_x-initmousepos[0]) < 5 and abs(mouse_y-initmousepos[1]) < 5 and selected_sprite != None:
-                print("1")
                 pygame.mixer.Sound(sprites[i].mod_sound_file).play()
-                print("2")
                 sprites[len(sprites)-1].rect.x = initspritepos[0]
-                print("3")
                 sprites[len(sprites)-1].rect.y = initspritepos[1] 
-                print("success")
+
         elif event.type == pygame.MOUSEMOTION and dragging:
             mouse_x,mouse_y = event.pos
             drag_sprite(mouse_x, mouse_y)
@@ -130,6 +134,7 @@ while True:
     #Draw Buttons
     for button in buttons:
         button.draw()#buttons go over sprites
+
     pygame.display.flip()
 
     #Draw Sliders
