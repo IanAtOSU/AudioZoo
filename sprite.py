@@ -6,8 +6,8 @@ class sprite():
     pitch = 1
     speed = 1
 
-    width = 30
-    height = 30
+    width = 90
+    height = 90
 
     def __init__(self, image, sound_file):
         self.image = pygame.image.load(image)

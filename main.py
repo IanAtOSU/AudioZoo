@@ -31,12 +31,12 @@ class textBox:
         return x>=self.locationsize[0] and x<=self.locationsize[0]+self.locationsize[2] and y>=self.locationsize[1] and y<=self.locationsize[1]+self.locationsize[3]
 
 #set up screen
-size = width, height = 1000, 700
+size = width, height = 1400, 800
 screen = pygame.display.set_mode(size)
-BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1000,700))
+BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400,800))
 
 #Create a sprite
-sprites = [sprite.sprite("Sprites/sprite0.gif", "Sounds/bruh.mp3"), sprite.sprite("Sprites/sprite1.gif", "Sounds/emergency.mp3")]
+sprites = [sprite.sprite("Sprites/Baloon.png", "Sounds/bruh.mp3"), sprite.sprite("Sprites/Cactus.png", "Sounds/emergency.mp3")]
 dragging = False
 initmousepos=[0,0]#initial position of mouse when clicking on sprite, used to calculate where the sprite should be
 initspritepos=[0,0]#initial position of sprite when clicking on sprite
