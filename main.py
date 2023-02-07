@@ -1,8 +1,7 @@
 import sys
 import os
-import sprite, sliders
 import pygame
-import sprite
+
 import random
 
 
@@ -12,6 +11,36 @@ pygame.init()
 pygame.mixer.init()
 pygame.font.init()
 game_font=pygame.font.SysFont("Times New Roman",30)
+
+class sprite():
+    def __init__(self, image="Sprites/sprite0.gif", sound_file="Sounds/metalgear.mp3", width = 30, height = 30, location=(100,200)):
+        self.location = location
+        self.width = width
+        self.height = height
+        
+        self.image = pygame.image.load(image)
+        self.image = pygame.transform.scale(self.image, (self.width, self.height))
+        self.rect = self.image.get_rect()
+
+        self.orig_sound_file = sound_file
+        self.mod_sound_file = sound_file
+
+        self.volume = 1
+        self.pitch = 1
+        self.pitch=1
+        self.speed=1
+
+class slider():
+    def __init__(self, minX=200, maxX=600, y=700):
+        if minX > maxX or minX < 0 or maxX > 900:
+            RuntimeError
+        self.y = y
+        self.minX = minX
+        self.maxX = maxX
+        self.x = minX + (maxX - minX) / 2
+
+    def get_level(self):
+        return self.x - ((self.maxX - self.minX) / 2)
 
 class textBox:
     def __init__(self,name="",locationsize=(0,0,100,20),background=(255,255,255),border=(0,0,0),textcolor=(0,0,0),text=""):
@@ -36,13 +65,13 @@ screen = pygame.display.set_mode(size)
 BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1000,700))
 
 #Create a sprite
-sprites = [sprite.sprite("Sprites/sprite0.gif", "Sounds/bruh.mp3"), sprite.sprite("Sprites/sprite1.gif", "Sounds/emergency.mp3")]
+sprites = [sprite("Sprites/sprite0.gif", "Sounds/TestAudio.wav"), sprite("Sprites/sprite1.gif")]
 dragging = False
 initmousepos=[0,0]#initial position of mouse when clicking on sprite, used to calculate where the sprite should be
 initspritepos=[0,0]#initial position of sprite when clicking on sprite
 mouse_x = 0
 mouse_y = 0
-sliders = [sliders.slider(700, 400, 600)]
+widgets = [slider(400, 600, 700)]
 
 #position sprites on screen.
 
@@ -77,13 +106,20 @@ while True:
         if event.type == pygame.QUIT: sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             selected_sprite = check_for_drag()
+            for button in buttons:
+                if button.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+                    print("click")
+                    if button.name=="addSprite":#add sprite button
+                        potentialsprites=os.listdir("Sprites")
+                        potentialsounds=os.listdir("Sounds")
+                        sprites.append(sprite("Sprites/"+potentialsprites[random.randint(0,len(potentialsprites)-1)],"Sounds/"+potentialsounds[random.randint(0,len(potentialsounds)-1)]))
         elif event.type == pygame.MOUSEBUTTONUP:
             dragging = False
             if abs(mouse_x-initmousepos[0]) < 5 and abs(mouse_y-initmousepos[1]) < 5 and selected_sprite != None:
-                pygame.mixer.Sound(sprites[i].get_mod_sound()).play()
+                pygame.mixer.Sound(sprites[i].mod_sound_file).play()
                 sprites[len(sprites)-1].rect.x = initspritepos[0]
                 sprites[len(sprites)-1].rect.y = initspritepos[1] 
-            
+
         elif event.type == pygame.MOUSEMOTION and dragging:
             mouse_x,mouse_y = event.pos
             drag_sprite(mouse_x, mouse_y)
@@ -98,9 +134,10 @@ while True:
     #Draw Buttons
     for button in buttons:
         button.draw()#buttons go over sprites
+
     pygame.display.flip()
 
     #Draw Sliders
-    pygame.draw.circle(screen, 'Blue', (sliders[0].x, sliders[0].y), 5)
-    pygame.draw.rect(screen, 'Grey', [sliders[0].minX, sliders[0].y, sliders[0].maxX - sliders[0].minX, 10])
+    pygame.draw.circle(screen, 'Blue', (widgets[0].x, widgets[0].y), 5)
+    pygame.draw.rect(screen, 'Grey', [widgets[0].minX, widgets[0].y, widgets[0].maxX - widgets[0].minX, 10])
 
