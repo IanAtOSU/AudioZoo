@@ -47,7 +47,7 @@ sliders = [sliders.slider(700, 400, 600)]
 #position sprites on screen.
 
 #Create textbox for adding sprites
-addSpriteButton=textBox(name="addSprite",locationsize=(50,height-50,250,50),text="Add a sprite")
+addSpriteButton=textBox(name="addSprite",locationsize=(10,height-51,200,50),text="  Add a sprite")
 buttons = [addSpriteButton]
 
 selected_sprite = sprites[0]
