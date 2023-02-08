@@ -3,7 +3,6 @@ import os
 import pygame
 import random
 import tkinter.filedialog
-import OtherFunctions
 
 
 #If mixer glitches and gives you an error like "pygame.error: Failed loading libmpg123-0.dll: The specified module could not be found." try finding your pygame directory and adding something like the below
