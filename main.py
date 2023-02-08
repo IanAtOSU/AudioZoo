@@ -1,8 +1,6 @@
 import sys
 import os
-import sprite, sliders
 import pygame
-import sprite
 import random
 
 
@@ -15,13 +13,12 @@ game_font=pygame.font.SysFont("Times New Roman",30)
 
 
 class sprite():
-    def __init__(self, image="Sprites/sprite0.gif", sound_file="Sounds/metalgear.mp3", width = 30, height = 30, initPos=(100,200)):
+    def __init__(self, image="Sprites/sprite0.gif", sound_file="Sounds/metalgear.mp3", width = 90, height = 90, initPos=(100,200)):
         self.initPos = initPos
         self.width = width
         self.height = height
         
-        self.image = pygame.image.load(image)
-        self.image = pygame.transform.scale(self.image, (self.width, self.height))
+        self.image = pygame.transform.scale(pygame.image.load(image), (self.width, self.height))
         self.rect = self.image.get_rect()
 
         self.orig_sound_file = sound_file
@@ -29,8 +26,8 @@ class sprite():
 
         self.volume = 1
         self.pitch = 1
-        self.pitch=1
-        self.speed=1
+        self.pitch = 1
+        self.speed = 1
 
         def __del__(self):
             print("deleted sprite with audio file: " + str(self.orig_sound_file))
@@ -76,7 +73,7 @@ screen = pygame.display.set_mode(size)
 BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400,800))
 
 
-sprites = [sprite("Sprites/Baloon.png", "Sounds/bruh.mp3"), sprite("Sprites/Cactus.png", "Sounds/emergency.mp3")]
+sprites = [sprite("Sprites/baloon.png", "Sounds/bruh.mp3"), sprite("Sprites/Cactus.png", "Sounds/emergency.mp3")]
 dragging_sprite = False
 dragging_slider = False
 
@@ -156,7 +153,7 @@ while True:
                 dragging_sprite = False
             dragging_slider = False
             if abs(mouse_x-initmousepos[0]) < 5 and abs(mouse_y-initmousepos[1]) < 5 and selected_sprite != None:
-                pygame.mixer.Sound(sprites[i].get_mod_sound()).play()
+                pygame.mixer.Sound(sprites[i].mod_sound_file).play()
                 sprites[len(sprites)-1].rect.x = initspritepos[0]
                 sprites[len(sprites)-1].rect.y = initspritepos[1] 
 
