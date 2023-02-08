@@ -1,7 +1,8 @@
 import sys
 import os
+import sprite, sliders
 import pygame
-
+import sprite
 import random
 
 
@@ -11,6 +12,7 @@ pygame.init()
 pygame.mixer.init()
 pygame.font.init()
 game_font=pygame.font.SysFont("Times New Roman",30)
+
 
 class sprite():
     def __init__(self, image="Sprites/sprite0.gif", sound_file="Sounds/metalgear.mp3", width = 30, height = 30, initPos=(100,200)):
@@ -69,18 +71,20 @@ class textBox:
         return x>=self.locationsize[0] and x<=self.locationsize[0]+self.locationsize[2] and y>=self.locationsize[1] and y<=self.locationsize[1]+self.locationsize[3]
 
 #set up screen
-size = width, height = 1000, 700
+size = width, height = 1400, 800
 screen = pygame.display.set_mode(size)
-BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1000,700))
+BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400,800))
 
-#Create a sprite
-sprites = [sprite("Sprites/sprite0.gif", "Sounds/TestAudio.wav"), sprite("Sprites/sprite1.gif")]
+
+sprites = [sprite("Sprites/Baloon.png", "Sounds/bruh.mp3"), sprite("Sprites/Cactus.png", "Sounds/emergency.mp3")]
 dragging_sprite = False
 dragging_slider = False
+
 initmousepos=[0,0]#initial position of mouse when clicking on sprite, used to calculate where the sprite should be
 initspritepos=[0,0]#initial position of sprite when clicking on sprite
 mouse_x = 0
 mouse_y = 0
+
 
 #position sprites on screen.
 
@@ -94,8 +98,6 @@ volume_slider = slider(300, 700, 600)
 
 buttons = [addSpriteButton, removeSpriteButton]
 sliders = [volume_slider]
-
-
 
 selected_sprite = sprites[0]
 
@@ -154,10 +156,12 @@ while True:
                 dragging_sprite = False
             dragging_slider = False
             if abs(mouse_x-initmousepos[0]) < 5 and abs(mouse_y-initmousepos[1]) < 5 and selected_sprite != None:
-                pygame.mixer.Sound(sprites[i].mod_sound_file).play()
+                pygame.mixer.Sound(sprites[i].get_mod_sound()).play()
                 sprites[len(sprites)-1].rect.x = initspritepos[0]
                 sprites[len(sprites)-1].rect.y = initspritepos[1] 
+
         elif event.type == pygame.MOUSEMOTION: 
+
             mouse_x,mouse_y = event.pos
             if dragging_sprite:
                 drag_sprite(mouse_x, mouse_y)
@@ -175,6 +179,7 @@ while True:
     #Draw Buttons
     for button in buttons:
         button.draw()
+        
     #Draw Sliders
     for slider in sliders:
         slider.draw()
