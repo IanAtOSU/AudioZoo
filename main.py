@@ -153,7 +153,7 @@ while True:
                 dragging_sprite = False
             dragging_slider = False
             if abs(mouse_x-initmousepos[0]) < 5 and abs(mouse_y-initmousepos[1]) < 5 and selected_sprite != None:
-                pygame.mixer.Sound(sprites[i].mod_sound_file).play()
+                pygame.mixer.Sound(sprites[len(sprites)-1].mod_sound_file).play()
                 sprites[len(sprites)-1].rect.x = initspritepos[0]
                 sprites[len(sprites)-1].rect.y = initspritepos[1] 
 
