@@ -76,7 +76,7 @@ class textBox():
         return x>=self.x and x<=self.x+self.width and y>=self.y and y<=self.y+self.height
 
 #Screen setup
-size = width, height = 1400, 800
+size = width, height = 1400, 801
 screen = pygame.display.set_mode(size)
 BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400,800))
 
