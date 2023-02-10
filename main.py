@@ -1,51 +1,184 @@
-import sys, pygame
+import sys
 import os
-import sprite
+import pygame
+import random
+
+
 #If mixer glitches and gives you an error like "pygame.error: Failed loading libmpg123-0.dll: The specified module could not be found." try finding your pygame directory and adding something like the below
 #os.add_dll_directory("C://Users/mrper_ssam80a/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.9_qbz5n2kfra8p0/LocalCache/local-packages/Python39/site-packages/pygame")
 pygame.init()
 pygame.mixer.init()
+pygame.font.init()
+game_font=pygame.font.SysFont("Times New Roman",30)
+
+
+class sprite():
+    def __init__(self, image="Sprites/sprite0.gif", sound_file="Sounds/metalgear.mp3", width = 90, height = 90, initPos=(100,200)):
+        self.initPos = initPos
+        self.width = width
+        self.height = height
+        
+        self.image = pygame.transform.scale(pygame.image.load(image), (self.width, self.height))
+        self.rect = self.image.get_rect()
+
+        self.orig_sound_file = sound_file
+        self.mod_sound_file = sound_file
+
+        self.volume = 1
+        self.pitch = 1
+        self.pitch = 1
+        self.speed = 1
+
+        def __del__(self):
+            print("deleted sprite with audio file: " + str(self.orig_sound_file))
+
+class slider():
+    def __init__(self, minX=200, maxX=600, y=700):
+        if minX > maxX or minX < 0 or maxX > 900:
+            ValueError
+        self.y = y
+        self.minX = minX
+        self.maxX = maxX
+        self.x = minX + (maxX - minX) / 2
+
+    def get_level(self):
+        return self.x - ((self.maxX - self.minX) / 2)
+
+    def draw(self):
+        pygame.draw.rect(screen, "Black", (self.minX-2, self.y-12, self.maxX - self.minX+4, 24) )
+        pygame.draw.rect(screen, "Grey", (self.minX, self.y-10, self.maxX - self.minX, 20) )
+        pygame.draw.rect(screen, "Black", (self.minX+10, self.y-1, self.maxX - self.minX -20 , 1) )
+        self.rect = pygame.draw.circle(screen, "Black", (self.x, self.y), 10)
+        pygame.draw.circle(screen, "Red", (self.x, self.y), 9)
+
+class textBox:
+    def __init__(self,name="",locationsize=(0,0,100,20),background=(255,255,255),border=(0,0,0),textcolor=(0,0,0),text=""):
+        self.name=name
+        self.locationsize=locationsize
+        self.background=background
+        self.border=border
+        self.textcolor=textcolor
+        self.text=text
+    def draw(self):
+        self.rect = pygame.draw.rect(screen,self.background,self.locationsize)
+        pygame.draw.rect(screen,self.border,self.locationsize,width=1)
+        text_surface=game_font.render(self.text,False,self.textcolor)
+        screen.blit(text_surface,(self.locationsize[0],self.locationsize[1]))
+    def within(self,x,y):
+        return x>=self.locationsize[0] and x<=self.locationsize[0]+self.locationsize[2] and y>=self.locationsize[1] and y<=self.locationsize[1]+self.locationsize[3]
 
 #set up screen
-size = width, height = 800, 800
+size = width, height = 1400, 800
 screen = pygame.display.set_mode(size)
+BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400,800))
 
-#create arrays of sprites
-numSprites = 6;
-sprites = [pygame.image.load("Sprites/sprite" + str(i) + ".gif") for i in range(numSprites)]
-sprite_boxes = [x.get_rect() for x in sprites]
 
-#add sounds corresponding to sprites
-sounds=[];#list of sounds, at this point in same order as sprites
-sounds.append(pygame.mixer.Sound("Sounds/bruh.mp3"))
-sounds.append(pygame.mixer.Sound("Sounds/emergency.mp3"))
-sounds.append(pygame.mixer.Sound("Sounds/mcoof.mp3"))
-sounds.append(pygame.mixer.Sound("Sounds/metalgear.mp3"))
-sounds.append(pygame.mixer.Sound("Sounds/soviet.mp3"))
-sounds.append(pygame.mixer.Sound("Sounds/vine-boom.mp3"))
+sprites = [sprite("Sprites/baloon.png", "Sounds/bruh.mp3"), sprite("Sprites/Cactus.png", "Sounds/emergency.mp3")]
+dragging_sprite = False
+dragging_slider = False
 
-#position sprites on screen. 
-#Currently just hardcoded for 6 sprites and 900x900 screen
-for i in range(numSprites):
-    if i<3:
-        sprite_boxes[i] = sprite_boxes[i].move([50 + 200 * i,300])
+initmousepos=[0,0]#initial position of mouse when clicking on sprite, used to calculate where the sprite should be
+initspritepos=[0,0]#initial position of sprite when clicking on sprite
+mouse_x = 0
+mouse_y = 0
+
+
+#position sprites on screen.
+
+#Create textbox for adding sprites
+addSpriteButton = textBox(name="addSprite",locationsize=(100,height-50,250,50),text="Add a sprite")
+#Remove a Sprite button
+removeSpriteButton = textBox(name="removeSprite",locationsize=(500,height-50,250,50),text="Remove a sprite")
+
+#Create slider
+volume_slider = slider(300, 700, 600)
+
+buttons = [addSpriteButton, removeSpriteButton]
+sliders = [volume_slider]
+
+selected_sprite = sprites[0]
+
+def check_for_drag(): 
+    global dragging_sprite, dragging_slider, mouse_x, mouse_y, initmousepos, initspritepos, initsliderpos, sprites, sliders
+    tmp = None
+    for i in range(len(sprites)-1,-1,-1):#play corresponding sound to sprite clicked on, prioritize sprites displayed last/on top
+        if sprites[i].rect.collidepoint(pygame.mouse.get_pos()):
+            mouse_x,mouse_y=event.pos
+            dragging_sprite = True
+            initmousepos=[mouse_x,mouse_y]
+            initspritepos=[sprites[i].rect.x,sprites[i].rect.y]
+            tmp=sprites[i] #give the object clicked on top priority
+            sprites.remove(tmp)
+            sprites.append(tmp)
+            break #only interact with the first sprite found
+    for i in range(len(sliders)-1,-1,-1):
+        if sliders[i].rect.collidepoint(pygame.mouse.get_pos()):
+            mouse_x,mouse_y=event.pos
+            dragging_slider = True
+            initmousepos=[mouse_x,mouse_y]
+            initsliderpos=[sliders[i].rect.x,sliders[i].rect.y]
+            tmp=sliders[i] #give the object clicked on top priority
+            sliders.remove(tmp)
+            sliders.append(tmp)
+            break #only interact with the first sprite found
+    return tmp
+
+def drag_sprite(mouse_x, mouse_y):
+    sprites[len(sprites)-1].rect.x = initspritepos[0]+mouse_x-initmousepos[0]
+    sprites[len(sprites)-1].rect.y = initspritepos[1]+mouse_y-initmousepos[1]
+
+def drag_slider(mouse_x):
+    if mouse_x > sliders[len(sliders)-1].maxX:
+        sliders[len(sliders)-1].x = sliders[len(sliders)-1].maxX
+    elif mouse_x < sliders[len(sliders)-1].minX:
+        sliders[len(sliders)-1].x = sliders[len(sliders)-1].minX
     else:
-        sprite_boxes[i] = sprite_boxes[i].move([50 + 200 * i - 600,600])
-
+        sliders[len(sliders)-1].x = initsliderpos[0]+mouse_x-initmousepos[0]
 
 #game loop
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            for i in range(len(sprites)):#play corresponding sound to sprite clicked on
-                if sprite_boxes[i].collidepoint(pygame.mouse.get_pos()):
-                    sounds[i].play();
-            #for box in sprite_boxes:
-            #    if box.collidepoint(pygame.mouse.get_pos()):
-            #        screen.fill((0,0,0))
+        elif event.type == pygame.MOUSEBUTTONDOWN: 
+            selected_sprite = check_for_drag()
+            if addSpriteButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+                potentialsprites=os.listdir("Sprites")
+                potentialsounds=os.listdir("Sounds")
+                sprites.append(sprite("Sprites/"+potentialsprites[random.randint(0,len(potentialsprites)-1)],"Sounds/"+potentialsounds[random.randint(0,len(potentialsounds)-1)]))
+        elif event.type == pygame.MOUSEBUTTONUP: 
+            if dragging_sprite:
+                if removeSpriteButton.within(selected_sprite.rect.x, selected_sprite.rect.y):
+                    del selected_sprite
+                    sprites.remove(sprites[len(sprites)-1])
+                dragging_sprite = False
+            dragging_slider = False
+            if abs(mouse_x-initmousepos[0]) < 5 and abs(mouse_y-initmousepos[1]) < 5 and selected_sprite != None:
+                pygame.mixer.Sound(sprites[i].mod_sound_file).play()
+                sprites[len(sprites)-1].rect.x = initspritepos[0]
+                sprites[len(sprites)-1].rect.y = initspritepos[1] 
 
+        elif event.type == pygame.MOUSEMOTION: 
+
+            mouse_x,mouse_y = event.pos
+            if dragging_sprite:
+                drag_sprite(mouse_x, mouse_y)
+            if dragging_slider:
+                drag_slider(mouse_x)
+
+            
     screen.fill((0,0,0))
-    for i in range(numSprites):
-        screen.blit(sprites[i], sprite_boxes[i])
+    screen.blit(BG, (0,0))
+    
+    #Draw Sprites
+    for i in range(len(sprites)):
+        screen.blit(sprites[i].image, sprites[i].rect)
+    
+    #Draw Buttons
+    for button in buttons:
+        button.draw()
+        
+    #Draw Sliders
+    for slider in sliders:
+        slider.draw()
+
     pygame.display.flip()
