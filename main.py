@@ -29,8 +29,25 @@ class sprite():
         self.pitch = 1
         self.speed = 1
 
+        # RC: Added Code
+        self.sound = pygame.mixer.Sound(self.mod_sound_file)
+        self.playing = False
+
+
         def __del__(self):
             print("deleted sprite with audio file: " + str(self.orig_sound_file))
+
+    # RC: Added Code
+    def play(self):
+        if not self.playing:
+            self.sound.play(loops=-1)
+            self.playing = True
+
+    # RC: Added Code
+    def stop(self):
+        if self.playing:
+            self.sound.stop()
+            self.playing = False
 
 class slider():
     def __init__(self, minX=200, maxX=600, y=700):
@@ -138,13 +155,16 @@ def drag_slider(mouse_x):
 #game loop
 while True:
     for event in pygame.event.get():
-        if event.type == pygame.QUIT: sys.exit()
+        if event.type == pygame.QUIT: 
+            sys.exit()
+
         elif event.type == pygame.MOUSEBUTTONDOWN: 
             selected_sprite = check_for_drag()
             if addSpriteButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
                 potentialsprites=os.listdir("Sprites")
                 potentialsounds=os.listdir("Sounds")
                 sprites.append(sprite("Sprites/"+potentialsprites[random.randint(0,len(potentialsprites)-1)],"Sounds/"+potentialsounds[random.randint(0,len(potentialsounds)-1)]))
+        
         elif event.type == pygame.MOUSEBUTTONUP: 
             if dragging_sprite:
                 if removeSpriteButton.within(selected_sprite.rect.x, selected_sprite.rect.y):
@@ -152,6 +172,16 @@ while True:
                     sprites.remove(sprites[len(sprites)-1])
                 dragging_sprite = False
             dragging_slider = False
+
+            # RC: Added Code
+            pos = pygame.mouse.get_pos()
+            for sprite in sprites:
+                if sprite.rect.collidepoint(pos):
+                    if sprite.playing:
+                        sprite.stop()
+                    else:
+                        sprite.play()
+
             if abs(mouse_x-initmousepos[0]) < 5 and abs(mouse_y-initmousepos[1]) < 5 and selected_sprite != None:
                 pygame.mixer.Sound(sprites[i].mod_sound_file).play()
                 sprites[len(sprites)-1].rect.x = initspritepos[0]
@@ -165,7 +195,7 @@ while True:
             if dragging_slider:
                 drag_slider(mouse_x)
 
-            
+    
     screen.fill((0,0,0))
     screen.blit(BG, (0,0))
     
