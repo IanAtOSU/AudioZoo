@@ -11,6 +11,11 @@ pygame.mixer.init()
 pygame.font.init()
 game_font=pygame.font.SysFont("Times New Roman",30)
 
+#set up screen
+size = width, height = 1400, 800
+screen = pygame.display.set_mode(size)
+BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400,800))
+
 
 class sprite():
     def __init__(self, image="Sprites/sprite0.gif", sound_file="Sounds/metalgear.mp3", width = 90, height = 90, initPos=(100,200)):
@@ -33,26 +38,28 @@ class sprite():
             print("deleted sprite with audio file: " + str(self.orig_sound_file))
 
 class slider():
-    def __init__(self, minX=200, maxX=600, y=700):
+    def __init__(self, minX=width-450, maxX=width-50, y=height-20,color=(115,105,215),slidercolor=[0,200,50]):
         if minX > maxX or minX < 0 or maxX > 900:
             ValueError
         self.y = y
         self.minX = minX
         self.maxX = maxX
         self.x = minX + (maxX - minX) / 2
+        self.color=color
+        self.slidercolor=slidercolor
 
     def get_level(self):
         return self.x - ((self.maxX - self.minX) / 2)
 
     def draw(self):
         pygame.draw.rect(screen, "Black", (self.minX-2, self.y-12, self.maxX - self.minX+4, 24) )
-        pygame.draw.rect(screen, "Grey", (self.minX, self.y-10, self.maxX - self.minX, 20) )
+        pygame.draw.rect(screen, self.color, (self.minX, self.y-10, self.maxX - self.minX, 20) )
         pygame.draw.rect(screen, "Black", (self.minX+10, self.y-1, self.maxX - self.minX -20 , 1) )
         self.rect = pygame.draw.circle(screen, "Black", (self.x, self.y), 10)
-        pygame.draw.circle(screen, "Red", (self.x, self.y), 9)
+        pygame.draw.circle(screen, self.slidercolor, (self.x, self.y), 9)
 
 class textBox:
-    def __init__(self,name="",locationsize=(0,0,100,20),background=(255,255,255),border=(0,0,0),textcolor=(0,0,0),text=""):
+    def __init__(self,name="",locationsize=(0,0,100,20),background=(115,105,215),border=(0,0,0),textcolor=(0,0,0),text=""):
         self.name=name
         self.locationsize=locationsize
         self.background=background
@@ -63,14 +70,11 @@ class textBox:
         self.rect = pygame.draw.rect(screen,self.background,self.locationsize)
         pygame.draw.rect(screen,self.border,self.locationsize,width=1)
         text_surface=game_font.render(self.text,False,self.textcolor)
-        screen.blit(text_surface,(self.locationsize[0],self.locationsize[1]))
+        text_rect=text_surface.get_rect(center=(self.locationsize[0]+self.locationsize[2]/2,self.locationsize[1]+self.locationsize[3]/2))
+        screen.blit(text_surface,text_rect)
     def within(self,x,y):
         return x>=self.locationsize[0] and x<=self.locationsize[0]+self.locationsize[2] and y>=self.locationsize[1] and y<=self.locationsize[1]+self.locationsize[3]
 
-#set up screen
-size = width, height = 1400, 800
-screen = pygame.display.set_mode(size)
-BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400,800))
 
 
 sprites = [sprite("Sprites/baloon.png", "Sounds/bruh.mp3"), sprite("Sprites/Cactus.png", "Sounds/emergency.mp3")]
@@ -91,7 +95,7 @@ addSpriteButton = textBox(name="addSprite",locationsize=(100,height-50,250,50),t
 removeSpriteButton = textBox(name="removeSprite",locationsize=(500,height-50,250,50),text="Remove a sprite")
 
 #Create slider
-volume_slider = slider(300, 700, 600)
+volume_slider = slider()#previously(300, 700, 600)
 
 buttons = [addSpriteButton, removeSpriteButton]
 sliders = [volume_slider]
