@@ -2,6 +2,7 @@ import sys
 import os
 import pygame
 import random
+import tkinter.filedialog
 
 #pygame Initialization
 pygame.init()
@@ -167,7 +168,9 @@ while True:
             if addSpriteButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
                 potentialsprites=os.listdir("Sprites")
                 potentialsounds=os.listdir("Sounds")
-                sprites.append(sprite("Sprites/"+potentialsprites[random.randint(0,len(potentialsprites)-1)],"Sounds/"+potentialsounds[random.randint(0,len(potentialsounds)-1)]))
+                image = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sprites\\")
+                sound = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sounds\\")
+                sprites.append(sprite(image, sound))
         elif event.type == pygame.MOUSEBUTTONUP: 
 
             #If we dragged a sprite
