@@ -3,8 +3,15 @@ import audioop
 import numpy as np
 import os
 
+'''
+Notes:
+    - All functions take a range from 0-1 as their multiplier input
+'''
+
 #Changes the audio file's volume
 def changeVolume(audio_path, multiplier):
+    multiplier = multiplier*3 #Range from 0 to 3
+
     audioIn = wave.open("Sounds/" + audio_path, 'rb')
     p = audioIn.getparams()
     os.remove("audioOutput/" + audio_path) #Ensure that this file isn't already there
@@ -14,7 +21,8 @@ def changeVolume(audio_path, multiplier):
     audioOut.writeframesraw(audioop.mul(frames, p.sampwidth, multiplier))
 
 #Pitches the audio file up or down
-def changePitch(audio_path, Hz_shift):
+def changePitch(audio_path, multiplier):
+    Hz_shift = (multiplier-0.5)*400 #range of change from -200 to +200 Hertz 
     audioIn = wave.open("Sounds/" + audio_path, 'r')
     p = list(audioIn.getparams())
     p[3] = 0 #(Number of samples will be set by writeframes)
@@ -52,6 +60,7 @@ def changePitch(audio_path, Hz_shift):
     audioOut.close() 
 
 def changeSpeed(audio_path, multiplier):
+    multiplier = (multiplier-0.5)*6 #range from -3x to +3x
     audioIn = wave.open("Sounds/" + audio_path, 'rb')
     rate = audioIn.getframerate()
     frames = audioIn.readframes(-1)
