@@ -160,6 +160,7 @@ while True:
                     selected_sprite = None
                 dragging_sprite = False
             dragging_slider = False
+            
             if abs(event.pos[0]-initmousepos[0]) < 5 and abs(event.pos[1]-initmousepos[1]) < 5 and selected_sprite != None: #if the sprite was not dragged
                 #play the sprite sound
                 pygame.mixer.Sound(sprites[len(sprites)-1].mod_sound_file).play()
