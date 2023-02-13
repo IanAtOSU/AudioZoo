@@ -84,7 +84,6 @@ BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400
 sprites = [sprite("Sprites/baloon.png", "Sounds/bruh.mp3"), sprite("Sprites/Cactus.png", "Sounds/emergency.mp3")]
 dragging_sprite = False
 dragging_slider = False
-
 initmousepos=[0,0]#initial position of mouse when clicking on sprite, used to calculate where the sprite should be
 initspritepos=[0,0]#initial position of sprite when clicking on sprite
 
@@ -147,8 +146,8 @@ while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN: 
-            selected_sprite = check_drag_sprite()
-            check_drag_slider()
+            if (check_drag_slider() == None):
+                selected_sprite = check_drag_sprite()
             if addSpriteButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
                 potentialsprites=os.listdir("Sprites")
                 potentialsounds=os.listdir("Sounds")
@@ -158,11 +157,12 @@ while True:
                 if removeSpriteButton.within(selected_sprite.rect.x, selected_sprite.rect.y):
                     del selected_sprite
                     sprites.remove(sprites[len(sprites)-1])
+                    selected_sprite = None
                 dragging_sprite = False
             dragging_slider = False
             if abs(event.pos[0]-initmousepos[0]) < 5 and abs(event.pos[1]-initmousepos[1]) < 5 and selected_sprite != None: #if the sprite was not dragged
                 #play the sprite sound
-                pygame.mixer.Sound(sprites[i].mod_sound_file).play()
+                pygame.mixer.Sound(sprites[len(sprites)-1].mod_sound_file).play()
                 sprites[len(sprites)-1].rect.x = initspritepos[0]
                 sprites[len(sprites)-1].rect.y = initspritepos[1] 
 
@@ -172,10 +172,14 @@ while True:
             if dragging_slider:
                 drag_slider(event.pos[0])
 
+
+
+
             
     screen.fill((0,0,0))
     screen.blit(BG, (0,0))
     
+
     #Draw Sprites
     for i in range(len(sprites)):
         screen.blit(sprites[i].image, sprites[i].rect)
