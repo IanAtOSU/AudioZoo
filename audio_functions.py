@@ -12,13 +12,16 @@ Notes:
 def changeVolume(audio_path, multiplier):
     multiplier = multiplier*3 #Range from 0 to 3
 
-    audioIn = wave.open("Sounds/" + audio_path, 'rb')
+    audioIn = wave.open(audio_path, 'rb')
     p = audioIn.getparams()
-    os.remove("audioOutput/" + audio_path) #Ensure that this file isn't already there
-    audioOut = wave.open("audioOutput/" + audio_path, 'wb')
+
+    outpath = "Sounds/VolOut_" + audio_path[audio_path.rfind("/")+1:]
+
+    audioOut = wave.open(outpath, 'wb')
     audioOut.setparams(p)
     frames = audioIn.readframes(p.nframes)
     audioOut.writeframesraw(audioop.mul(frames, p.sampwidth, multiplier))
+    return outpath
 
 #Pitches the audio file up or down
 def changePitch(audio_path, multiplier):
@@ -26,7 +29,7 @@ def changePitch(audio_path, multiplier):
     audioIn = wave.open("Sounds/" + audio_path, 'r')
     p = list(audioIn.getparams())
     p[3] = 0 #(Number of samples will be set by writeframes)
-    os.remove("audioOutput/" + audio_path) #Ensure that this file isn't already there
+
     audioOut = wave.open("audioOutput/" + audio_path, 'w')
     audioOut.setparams(tuple(p))
 
@@ -64,7 +67,7 @@ def changeSpeed(audio_path, multiplier):
     audioIn = wave.open("Sounds/" + audio_path, 'rb')
     rate = audioIn.getframerate()
     frames = audioIn.readframes(-1)
-    os.remove("audioOutput/" + audio_path) #Ensure that this file isn't already there
+
     audioOut = wave.open("audioOutput/" + audio_path, 'wb')
 
     audioOut.setparams(audioIn.getparams())
@@ -72,8 +75,3 @@ def changeSpeed(audio_path, multiplier):
     audioOut.writeframes(frames)
     audioIn.close()
     audioOut.close()
-
-
-changeVolume("TestAudio.wav", 0.25)
-changePitch("TestAudio.wav", -100)
-changeSpeed("TestAudio.wav", 2)
