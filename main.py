@@ -3,6 +3,7 @@ import os
 import pygame
 import random
 import tkinter.filedialog
+import audio_functions
 
 #pygame Initialization
 pygame.init()
@@ -12,7 +13,7 @@ game_font=pygame.font.SysFont("Times New Roman",30)
 
 #Class definitions
 class sprite():
-    def __init__(self, image="Sprites/sprite0.gif", sound_file="Sounds/metalgear.mp3", width = 90, height = 90, initPos=(100,200)):
+    def __init__(self, image="Sprites/sprite0.gif", sound_file="Sounds/metalgear.wav", width = 90, height = 90, initPos=(100,200)):
         self.initPos = initPos
         self.width = width
         self.height = height
@@ -82,7 +83,7 @@ screen = pygame.display.set_mode(size)
 BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400,800))
 
 
-sprites = [sprite("Sprites/baloon.png", "Sounds/bruh.mp3"), sprite("Sprites/Cactus.png", "Sounds/emergency.mp3")]
+sprites = [sprite("Sprites/baloon.png", "Sounds/bruh.wav"), sprite("Sprites/Cactus.png", "Sounds/emergency.wav")]
 dragging_sprite = False
 dragging_slider = None
 initmousepos=[0,0]#initial position of mouse when clicking on sprite, used to calculate where the sprite should be
@@ -187,6 +188,7 @@ while True:
                 # set the selected_sprite's attributes to the dragged slider's position
                 if dragging_slider == volume_slider:
                     selected_sprite.volume = dragging_slider.get_level()
+                    selected_sprite.mod_sound_file = audio_functions.changeVolume(selected_sprite.orig_sound_file, selected_sprite.volume)
                 dragging_slider = None
             #if we did not click on a slider, and we did not drag our mouse since the last MOUSEBUTTONDOWN, and selected_sprite exists, play the sound
             elif abs(event.pos[0]-initmousepos[0]) < 5 and abs(event.pos[1]-initmousepos[1]) < 5 and selected_sprite != None: #if the sprite was not dragged
