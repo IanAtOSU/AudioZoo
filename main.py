@@ -67,18 +67,21 @@ class slider():
 
 
 class textBox:
-    def __init__(self,name="",locationsize=(0,0,100,20),background=(115,105,215),border=(0,0,0),textcolor=(0,0,0),text=""):
+    def __init__(self,name="",x=0,y=0,width=100,height=20,background=(115,105,215),border=(0,0,0),textcolor=(0,0,0),text=""):
         self.name=name
-        self.locationsize=locationsize
+        self.x=x
+        self.y = y
+        self.width = width
+        self.height = height
         self.background=background
         self.border=border
         self.textcolor=textcolor
         self.text=text
     def draw(self):
-        self.rect = pygame.draw.rect(screen,self.background,self.locationsize)
-        pygame.draw.rect(screen,self.border,self.locationsize,width=1)
+        self.rect = pygame.draw.rect(screen,self.background,(self.x,self.y,self.width,self.height))
+        pygame.draw.rect(screen,self.border,(self.x,self.y,self.width,self.height),width=1)
         text_surface=game_font.render(self.text,False,self.textcolor)
-        text_rect=text_surface.get_rect(center=(self.locationsize[0]+self.locationsize[2]/2,self.locationsize[1]+self.locationsize[3]/2))
+        text_rect=text_surface.get_rect(center=(self.x+self.width/2,self.y+self.height/2))
         screen.blit(text_surface,text_rect)
 
     def within(self,x,y):
@@ -100,9 +103,9 @@ removeSpriteButton = textBox(500,height-50,250,50,text="Remove a sprite")
 
 
 #Create textbox for adding sprites
-addSpriteButton = textBox(name="addSprite",locationsize=(100,height-50,250,50),text="Add a sprite")
+addSpriteButton = textBox(name="addSprite",x=100,y=height-50,width=250,height=50,text="Add a sprite")
 #Remove a Sprite button
-removeSpriteButton = textBox(name="removeSprite",locationsize=(500,height-50,250,50),text="Remove a sprite")
+removeSpriteButton = textBox(name="removeSprite",x=500,y=height-50,width=250,height=50,text="Remove a sprite")
 
 #Create slider
 volume_slider = slider()#previously(300, 700, 600)
