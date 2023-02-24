@@ -35,8 +35,24 @@ class sprite():
         self.pitch = 0.5
         self.speed = 0.5
 
-        def __del__(self):
-            print("deleted sprite with audio file: " + str(self.orig_sound_file))
+        # RC: Added Code
+        self.sound = pygame.mixer.Sound(self.mod_sound_file)
+        self.playing = False
+
+    # RC: Added Code
+    def play(self):
+        if not self.playing:
+            self.sound.play(loops=-1)
+            self.playing = True
+
+    # RC: Added Code
+    def stop(self):
+        if self.playing:
+            self.sound.stop()
+            self.playing = False
+
+    def __del__(self):
+        print("deleted sprite with audio file: " + str(self.orig_sound_file))
 
 class slider():
     def __init__(self, minX=width-450, maxX=width-50, y=height-20,color=(115,105,215),slidercolor=[0,200,50]):
