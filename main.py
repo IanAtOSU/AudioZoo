@@ -138,11 +138,13 @@ addSpriteButton = textBox(name="addSprite",x=1,y=height-50,width=250,height=50,t
 removeSpriteButton = textBox(name="removeSprite",x=251,y=height-50,width=250,height=50,text="Remove a sprite")
 #Sprite looping button
 loopSpriteButton = textBox(name="loopSprite",x=501,y=height-50,width=250,height=50,text="Looping: N")
+#change background button
+changeBGButton = textBox(name="changeBG", x=1, y= height-100, width= 250, height = 50, text = "Change background")
 
 #Create slider
 volume_slider = slider()#previously(300, 700, 600)
 
-buttons = [addSpriteButton, removeSpriteButton, loopSpriteButton]
+buttons = [addSpriteButton, removeSpriteButton, loopSpriteButton, changeBGButton]
 sliders = [volume_slider]
 
 selected_sprite = sprites[0]
@@ -220,6 +222,12 @@ while True:
                     selected_sprite.looping = 0
                 else:
                     selected_sprite.looping = -1
+            elif changeBGButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+                print( os.getcwd()+"\\Background\\" )
+                BG_temp = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Background\\")
+                if BG_temp != '':
+                    BG = pygame.transform.scale(pygame.image.load(BG_temp), (1400,800))
+
             else:
                 #SUPER IMPORTANT
                 #selected sprite stores the last sprite clicked on. Nonetype if the background was clicked or selected_sprite got deleted
