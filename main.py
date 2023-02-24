@@ -58,6 +58,7 @@ class sprite():
         global dragging_slider
         self.volume = dragging_slider.get_level()
         self.mod_sound_file = audio_functions.changeVolume(self.orig_sound_file, self.volume)
+        self.sound = pygame.mixer.Sound(self.mod_sound_file)
         self.width = math.floor(( abs(dragging_slider.get_level()) ** (1/3) ) * 200  + 20)
         self.height = math.floor(( abs(dragging_slider.get_level()) ** (1/3) ) * 200 + 20)
         
