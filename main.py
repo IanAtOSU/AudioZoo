@@ -67,6 +67,18 @@ class sprite():
     def __del__(self):
         print("deleted sprite with audio file: " + str(self.orig_sound_file))
 
+    # RC: Added Code
+    def play(self):
+        if not self.playing:
+            self.sound.play(loops=-1)
+            self.playing = True
+
+    # RC: Added Code
+    def stop(self):
+        if self.playing:
+            self.sound.stop()
+            self.playing = False
+
 class slider():
     def __init__(self, minX=width-450, maxX=width-50, y=height-20,color=(115,105,215),slidercolor=[0,200,50]):
         if minX > maxX or minX < 0 or maxX > 900:
@@ -141,11 +153,16 @@ loopSpriteButton = textBox(name="loopSprite",x=501,y=height-50,width=250,height=
 #change background button
 changeBGButton = textBox(name="changeBG", x=1, y= height-100, width= 250, height = 50, text = "Change background")
 
+changeBackgroundButton = textBox(name="changeBackground",locationsize=(900,height-50,250,50),text="Change Background")
+
+
+#Change the Background button
+#changeBackgroundButton = textBox(name="changeBackground",locationsize=(600,height-50,250,50),text="Change Background")
+
 #Create slider
 volume_slider = slider()#previously(300, 700, 600)
 
 buttons = [addSpriteButton, removeSpriteButton, loopSpriteButton, changeBGButton]
-sliders = [volume_slider]
 
 selected_sprite = sprites[0]
 
@@ -205,7 +222,9 @@ while True:
     
     #Event loop
     for event in pygame.event.get():
-        if event.type == pygame.QUIT: sys.exit()
+        if event.type == pygame.QUIT: 
+            sys.exit()
+
         elif event.type == pygame.MOUSEBUTTONDOWN: 
 
             print(selected_sprite)
@@ -241,7 +260,7 @@ while True:
             # 1. on MOUSEBUTTONDOWN, set selected_sprite/dragging_slider to what was clicked
             # 2. on MOUSEMOTION, if dragging then drag selected_sprite/dragging_slider from their inital positions (initspritepos/initsliderpos)
             # 3. on MOUSEBUTTONUP, we drop them into place and apply any effects from the drag (like removing sprites, changing volumes, etc)
-            
+        
         elif event.type == pygame.MOUSEBUTTONUP: 
 
             #If we dragged a sprite
