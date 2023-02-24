@@ -36,7 +36,7 @@ class sprite():
         self.pitch = 0.5
         self.speed = 0.5
 
-        self.looping = 1 #1 = not looping; -1 = is looping
+        self.looping = 0 #0 = not looping; -1 = is looping
         # RC: Added Code
         self.sound = pygame.mixer.Sound(self.mod_sound_file)
         self.playing = False
@@ -219,12 +219,15 @@ while True:
             elif loopSpriteButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
                 if selected_sprite.looping == -1:
                     selected_sprite.stop()
-                selected_sprite.looping = (-1)*selected_sprite.looping
+                    selected_sprite.looping = 0
+                else:
+                    selected_sprite.looping = -1
             elif changeBGButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
                 print( os.getcwd()+"\\Background\\" )
                 BG_temp = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Background\\")
                 if BG_temp != '':
                     BG = pygame.transform.scale(pygame.image.load(BG_temp), (1400,800))
+
             else:
                 #SUPER IMPORTANT
                 #selected sprite stores the last sprite clicked on. Nonetype if the background was clicked or selected_sprite got deleted
