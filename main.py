@@ -1,7 +1,7 @@
 import sys
 import os
 import pygame
-import random
+import math
 import tkinter.filedialog
 import audio_functions
 
@@ -19,12 +19,13 @@ BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400
 
 
 class sprite():
-    def __init__(self, image="Sprites/sprite0.gif", sound_file="Sounds/metalgear.wav", width = 90, height = 90, initPos=(100,200)):
+    def __init__(self, image_file="Sprites/sprite0.gif", sound_file="Sounds/metalgear.wav", width = 90, height = 90, initPos=(100,200)):
         self.initPos = initPos
         self.width = width
         self.height = height
         
-        self.image = pygame.transform.scale(pygame.image.load(image), (self.width, self.height))
+        self.image_file = image_file
+        self.image = pygame.transform.scale(pygame.image.load(self.image_file), (self.width, self.height))
         self.rect = self.image.get_rect()
 
         self.orig_sound_file = sound_file
@@ -52,6 +53,17 @@ class sprite():
         if self.playing:
             self.sound.stop()
             self.playing = False
+
+    def change_volume(self):
+        global dragging_slider
+        self.volume = dragging_slider.get_level()
+        self.mod_sound_file = audio_functions.changeVolume(self.orig_sound_file, self.volume)
+        self.sound = pygame.mixer.Sound(self.mod_sound_file)
+        self.width = math.floor(( abs(dragging_slider.get_level()) ** (1/3) ) * 200  + 20)
+        self.height = math.floor(( abs(dragging_slider.get_level()) ** (1/3) ) * 200 + 20)
+        
+        self.image = pygame.transform.scale(pygame.image.load(self.image_file), (self.width, self.height))
+        self.rect = pygame.Rect(self.rect.x, self.rect.y, self.width, self.height)
 
     def __del__(self):
         print("deleted sprite with audio file: " + str(self.orig_sound_file))
@@ -127,11 +139,13 @@ addSpriteButton = textBox(name="addSprite",x=1,y=height-50,width=250,height=50,t
 removeSpriteButton = textBox(name="removeSprite",x=251,y=height-50,width=250,height=50,text="Remove a sprite")
 #Sprite looping button
 loopSpriteButton = textBox(name="loopSprite",x=501,y=height-50,width=250,height=50,text="Looping: N")
+#change background button
+changeBGButton = textBox(name="changeBG", x=1, y= height-100, width= 250, height = 50, text = "Change background")
 
 #Create slider
 volume_slider = slider()#previously(300, 700, 600)
 
-buttons = [addSpriteButton, removeSpriteButton, loopSpriteButton]
+buttons = [addSpriteButton, removeSpriteButton, loopSpriteButton, changeBGButton]
 sliders = [volume_slider]
 
 selected_sprite = sprites[0]
@@ -195,7 +209,6 @@ while True:
         if event.type == pygame.QUIT: sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN: 
 
-            print(selected_sprite)
             #Button click checks need to be first so they don't set selected_sprite to None
             #If add-a-sprite button is clicked
             if addSpriteButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
@@ -209,6 +222,12 @@ while True:
                     selected_sprite.looping = 0
                 else:
                     selected_sprite.looping = -1
+            elif changeBGButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+                print( os.getcwd()+"\\Background\\" )
+                BG_temp = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Background\\")
+                if BG_temp != '':
+                    BG = pygame.transform.scale(pygame.image.load(BG_temp), (1400,800))
+
             else:
                 #SUPER IMPORTANT
                 #selected sprite stores the last sprite clicked on. Nonetype if the background was clicked or selected_sprite got deleted
@@ -238,8 +257,7 @@ while True:
             if dragging_slider != None:
                 # set the selected_sprite's attributes to the dragged slider's position
                 if dragging_slider == volume_slider:
-                    selected_sprite.volume = dragging_slider.get_level()
-                    selected_sprite.mod_sound_file = audio_functions.changeVolume(selected_sprite.orig_sound_file, selected_sprite.volume)
+                    selected_sprite.change_volume()
                 dragging_slider = None
             #if we did not click on a slider, and we did not drag our mouse since the last MOUSEBUTTONDOWN, and selected_sprite exists, play the sound
             elif abs(event.pos[0]-initmousepos[0]) < 5 and abs(event.pos[1]-initmousepos[1]) < 5 and selected_sprite != None: #if the sprite was not dragged
