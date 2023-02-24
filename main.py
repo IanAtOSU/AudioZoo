@@ -35,6 +35,7 @@ class sprite():
         self.pitch = 0.5
         self.speed = 0.5
 
+        self.looping = 1 #1 = not looping; -1 = is looping
         # RC: Added Code
         self.sound = pygame.mixer.Sound(self.mod_sound_file)
         self.playing = False
@@ -42,7 +43,7 @@ class sprite():
     # RC: Added Code
     def play(self):
         if not self.playing:
-            self.sound.play(loops=-1)
+            self.sound.play(loops=self.looping)
             self.playing = True
 
     # RC: Added Code
@@ -116,17 +117,20 @@ initspritepos=[0,0]#initial position of sprite when clicking on sprite
 #Buttons
 addSpriteButton = textBox(100,height-50,250,50, text="Add a sprite")
 removeSpriteButton = textBox(500,height-50,250,50,text="Remove a sprite")
+loopSpriteButton = textBox(500,height-50,250,50,text="Looping: Y")
 
 
 #Create textbox for adding sprites
-addSpriteButton = textBox(name="addSprite",x=100,y=height-50,width=250,height=50,text="Add a sprite")
+addSpriteButton = textBox(name="addSprite",x=1,y=height-50,width=250,height=50,text="Add a sprite")
 #Remove a Sprite button
-removeSpriteButton = textBox(name="removeSprite",x=500,y=height-50,width=250,height=50,text="Remove a sprite")
+removeSpriteButton = textBox(name="removeSprite",x=251,y=height-50,width=250,height=50,text="Remove a sprite")
+#Sprite looping button
+loopSpriteButton = textBox(name="loopSprite",x=501,y=height-50,width=250,height=50,text="Looping: N")
 
 #Create slider
 volume_slider = slider()#previously(300, 700, 600)
 
-buttons = [addSpriteButton, removeSpriteButton]
+buttons = [addSpriteButton, removeSpriteButton, loopSpriteButton]
 sliders = [volume_slider]
 
 selected_sprite = sprites[0]
@@ -176,30 +180,41 @@ def drag_slider(mouse_x):
 
 #game loop
 while True:
+    if selected_sprite == None:
+        loopSpriteButton.text = "Looping: N/A"
+    else:
+        if selected_sprite.looping == 1:
+            loopSpriteButton.text = "Looping: Y"
+        else:
+            loopSpriteButton.text = "Looping: N"
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN: 
 
-            #SUPER IMPORTANT
-            #selected sprite stores the last sprite clicked on. Nonetype if the background was clicked or selected_sprite got deleted
-            #dragging_slider stores the slider currently being dragged
-            if (check_drag_slider() == None):
-                selected_sprite = check_drag_sprite()
-            if selected_sprite == None:
-                dragging_slider = None # !! if we try to drag a slider with no current selected_sprite, we do not allow the drag. Slider default to 0.5 !!
+            print(selected_sprite)
+            #Button click checks need to be first so they don't set selected_sprite to None
+            #If add-a-sprite button is clicked
+            if addSpriteButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+                image = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sprites\\")
+                sound = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sounds\\")
+                if image != '' and sound != '':
+                    sprites.append(sprite(image, sound))
+            elif loopSpriteButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+                selected_sprite.looping = (-1)*selected_sprite.looping
+            else:
+                #SUPER IMPORTANT
+                #selected sprite stores the last sprite clicked on. Nonetype if the background was clicked or selected_sprite got deleted
+                #dragging_slider stores the slider currently being dragged
+                if (check_drag_slider() == None):
+                    selected_sprite = check_drag_sprite()
+                if selected_sprite == None:
+                    dragging_slider = None # !! if we try to drag a slider with no current selected_sprite, we do not allow the drag. Slider default to 0.5 !!
             
             # There are 3 steps to dragging. 
             # 1. on MOUSEBUTTONDOWN, set selected_sprite/dragging_slider to what was clicked
             # 2. on MOUSEMOTION, if dragging then drag selected_sprite/dragging_slider from their inital positions (initspritepos/initsliderpos)
             # 3. on MOUSEBUTTONUP, we drop them into place and apply any effects from the drag (like removing sprites, changing volumes, etc)
             
-            #If add-a-sprite button is clicked
-            if addSpriteButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
-                potentialsprites=os.listdir("Sprites")
-                potentialsounds=os.listdir("Sounds")
-                image = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sprites\\")
-                sound = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sounds\\")
-                sprites.append(sprite(image, sound))
         elif event.type == pygame.MOUSEBUTTONUP: 
 
             #If we dragged a sprite
