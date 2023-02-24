@@ -2,6 +2,8 @@ import sys
 import os
 import pygame
 import random
+import tkinter as tk
+from tkinter import filedialog
 
 
 #If mixer glitches and gives you an error like "pygame.error: Failed loading libmpg123-0.dll: The specified module could not be found." try finding your pygame directory and adding something like the below
@@ -107,10 +109,16 @@ addSpriteButton = textBox(name="addSprite",locationsize=(100,height-50,250,50),t
 #Remove a Sprite button
 removeSpriteButton = textBox(name="removeSprite",locationsize=(500,height-50,250,50),text="Remove a sprite")
 
+changeBackgroundButton = textBox(name="changeBackground",locationsize=(900,height-50,250,50),text="Change Background")
+
+
+#Change the Background button
+#changeBackgroundButton = textBox(name="changeBackground",locationsize=(600,height-50,250,50),text="Change Background")
+
 #Create slider
 volume_slider = slider(300, 700, 600)
 
-buttons = [addSpriteButton, removeSpriteButton]
+buttons = [addSpriteButton, removeSpriteButton, changeBackgroundButton]
 sliders = [volume_slider]
 
 selected_sprite = sprites[0]
@@ -164,7 +172,16 @@ while True:
                 potentialsprites=os.listdir("Sprites")
                 potentialsounds=os.listdir("Sounds")
                 sprites.append(sprite("Sprites/"+potentialsprites[random.randint(0,len(potentialsprites)-1)],"Sounds/"+potentialsounds[random.randint(0,len(potentialsounds)-1)]))
-        
+            
+            # Check if Change Background button is clicked
+            if changeBackgroundButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+                # Open file dialog to select png image file
+                filepath = filedialog.askopenfilename(initialdir="./Background", title="Select a background image", filetypes=[("PNG files", "*.png")])
+                # Load the selected image file and scale it to the screen size
+                if filepath:
+                    BG = pygame.transform.scale(pygame.image.load(filepath), (width, height))
+
+
         elif event.type == pygame.MOUSEBUTTONUP: 
             if dragging_sprite:
                 if removeSpriteButton.within(selected_sprite.rect.x, selected_sprite.rect.y):
