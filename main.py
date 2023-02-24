@@ -43,8 +43,9 @@ class sprite():
     # RC: Added Code
     def play(self):
         if not self.playing:
-            self.sound.play(loops=self.looping)
-            self.playing = True
+            self.sound.play(loops=self.looping) 
+            if self.looping == -1:
+                self.playing = True
 
     # RC: Added Code
     def stop(self):
@@ -140,7 +141,7 @@ selected_sprite = sprites[0]
 def check_drag_sprite(): 
     global sprites, dragging_sprite, initmousepos, initspritepos
     tmp = None
-    for i in range(len(sprites)-1,-1,-1):#play corresponding sound to sprite clicked on, prioritize sprites displayed last/on top
+    for i in range(len(sprites)-1,-1,-1):#prioritize sprites displayed last/on top
         if sprites[i].rect.collidepoint(pygame.mouse.get_pos()):
             dragging_sprite = True
             initmousepos=[event.pos[0],event.pos[1]]
@@ -180,13 +181,16 @@ def drag_slider(mouse_x):
 
 #game loop
 while True:
+    #Update looping button to currently selected sprite
     if selected_sprite == None:
         loopSpriteButton.text = "Looping: N/A"
     else:
-        if selected_sprite.looping == 1:
+        if selected_sprite.looping == -1: #-1 means is looping
             loopSpriteButton.text = "Looping: Y"
         else:
             loopSpriteButton.text = "Looping: N"
+    
+    #Event loop
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN: 
@@ -200,6 +204,8 @@ while True:
                 if image != '' and sound != '':
                     sprites.append(sprite(image, sound))
             elif loopSpriteButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+                if selected_sprite.looping == -1:
+                    selected_sprite.stop()
                 selected_sprite.looping = (-1)*selected_sprite.looping
             else:
                 #SUPER IMPORTANT
@@ -236,7 +242,8 @@ while True:
             #if we did not click on a slider, and we did not drag our mouse since the last MOUSEBUTTONDOWN, and selected_sprite exists, play the sound
             elif abs(event.pos[0]-initmousepos[0]) < 5 and abs(event.pos[1]-initmousepos[1]) < 5 and selected_sprite != None: #if the sprite was not dragged
                 #play the sprite sound
-                pygame.mixer.Sound(sprites[len(sprites)-1].mod_sound_file).play()
+                selected_sprite.play()
+                #pygame.mixer.Sound(sprites[len(sprites)-1].mod_sound_file).play()
                 sprites[len(sprites)-1].rect.x = initspritepos[0]
                 sprites[len(sprites)-1].rect.y = initspritepos[1] 
 
