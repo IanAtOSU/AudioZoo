@@ -209,7 +209,6 @@ while True:
         if event.type == pygame.QUIT: sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN: 
 
-            print(selected_sprite)
             #Button click checks need to be first so they don't set selected_sprite to None
             #If add-a-sprite button is clicked
             if addSpriteButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
