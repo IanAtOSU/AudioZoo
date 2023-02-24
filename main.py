@@ -224,6 +224,10 @@ while True:
         for i in sliders:
             if i == volume_slider:
                 i.set_level(selected_sprite.volume)
+            if i == pitch_slider:
+                i.set_level(selected_sprite.pitch)
+            if i == speed_slider:
+                i.set_level(selected_sprite.speed)
 
     #If selected_sprite goes to None, default all sliders to 0.5
     if selected_sprite == None:
