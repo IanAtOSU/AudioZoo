@@ -32,35 +32,50 @@ class sprite():
         self.mod_sound_file = sound_file
 
         self.volume = 0.5
-        self.pitch = 0.5
-        self.pitch = 0.5
+        self.pitch = 0.5 
         self.speed = 0.5
+
 
         self.looping = 0 #0 = not looping; -1 = is looping
         # RC: Added Code
         self.sound = pygame.mixer.Sound(self.mod_sound_file)
         self.playing = False
 
-    # RC: Added Code
     def play(self):
         if not self.playing:
-            self.sound.play(loops=self.looping)
+            self.sound = pygame.mixer.Sound(self.mod_sound_file)
+            self.sound.play(loops=self.looping) 
             if self.looping == -1:
                 self.playing = True
 
-    # RC: Added Code
     def stop(self):
         if self.playing:
             self.sound.stop()
             self.playing = False
 
+    def change_volume(self):
+        global dragging_slider
+        self.volume = dragging_slider.get_level()
+        self.mod_sound_file = audio_functions.changeVolume(self.orig_sound_file, self.volume)
+        self.sound = pygame.mixer.Sound(self.mod_sound_file)
+        self.width = math.floor(( abs(dragging_slider.get_level()) ** (1/3) ) * 200  + 20)
+        self.height = math.floor(( abs(dragging_slider.get_level()) ** (1/3) ) * 200 + 20)
+        
+        self.image = pygame.transform.scale(pygame.image.load(self.image_file), (self.width, self.height))
+        self.rect = pygame.Rect(self.rect.x, self.rect.y, self.width, self.height)
+        
+    def update_mod_sound_file(self):
+        self.mod_sound_file=audio_functions.changeAll(self.orig_sound_file,self.volume,self.pitch,self.speed)
+     
     def __del__(self):
         print("deleted sprite with audio file: " + str(self.orig_sound_file))
 
+
 class slider():
-    def __init__(self, minX=width-450, maxX=width-50, y=height-20,color=(115,105,215),slidercolor=[0,200,50]):
+    def __init__(self, name="", minX=width-450, maxX=width-50, y=height-20,color=(115,105,215),slidercolor=[0,200,50]):
         if minX > maxX or minX < 0 or maxX > 900:
             ValueError
+        self.name=name
         self.y = y
         self.minX = minX
         self.maxX = maxX
@@ -116,11 +131,11 @@ initspritepos=[0,0]#initial position of sprite when clicking on sprite
 
 #Create widgets
 
-#Buttons
-addSpriteButton = textBox(100,height-50,250,50, text="Add a sprite")
-removeSpriteButton = textBox(500,height-50,250,50,text="Remove a sprite")
-loopSpriteButton = textBox(500,height-50,250,50,text="Looping: Y")
 
+#Buttons ... DELETE NEXT 3 LINES IF CODE RUNS ...
+#addSpriteButton = textBox(100,height-50,250,50, text="Add a sprite")
+#removeSpriteButton = textBox(500,height-50,250,50,text="Remove a sprite")
+#loopSpriteButton = textBox(500,height-50,250,50,text="Looping: Y")
 
 #Create textbox for adding sprites
 addSpriteButton = textBox(name="addSprite",x=1,y=height-50,width=250,height=50,text="Add a sprite")
@@ -131,11 +146,15 @@ loopSpriteButton = textBox(name="loopSprite",x=501,y=height-50,width=250,height=
 #change background button
 changeBGButton = textBox(name="changeBG", x=1, y= height-100, width= 250, height = 50, text = "Change background")
 
-#Create slider
-volume_slider = slider()#previously(300, 700, 600)
+#Create sliders
+volume_slider = slider(name="Volume",y=height-20)#previously(300, 700, 600)
+pitch_slider = slider(name="Pitch",y=height-45)
+speed_slider = slider(name="Speed",y=height-70)
+
 
 buttons = [addSpriteButton, removeSpriteButton, loopSpriteButton, changeBGButton]
-sliders = [volume_slider]
+sliders = [volume_slider,pitch_slider,speed_slider]
+
 
 selected_sprite = sprites[0]
 
@@ -251,8 +270,14 @@ while True:
             #If we dragged a slider
             if dragging_slider != None:
                 # set the selected_sprite's attributes to the dragged slider's position
-                if dragging_slider == volume_slider:
-                    selected_sprite.change_volume()
+                if dragging_slider.name == "Volume":
+                    selected_sprite.volume = dragging_slider.get_level()
+                elif dragging_slider.name == "Pitch":
+                    selected_sprite.pitch = dragging_slider.get_level()
+                elif dragging_slider.name == "Speed":
+                    selected_sprite.speed = dragging_slider.get_level()
+                selected_sprite.update_mod_sound_file();
+
                 dragging_slider = None
             #if we did not click on a slider, and we did not drag our mouse since the last MOUSEBUTTONDOWN, and selected_sprite exists, play the sound
             elif abs(event.pos[0]-initmousepos[0]) < 5 and abs(event.pos[1]-initmousepos[1]) < 5 and selected_sprite != None: #if the sprite was not dragged
@@ -277,6 +302,10 @@ while True:
         for i in sliders:
             if i == volume_slider:
                 i.set_level(selected_sprite.volume)
+            if i == pitch_slider:
+                i.set_level(selected_sprite.pitch)
+            if i == speed_slider:
+                i.set_level(selected_sprite.speed)
 
     #If selected_sprite goes to None, default all sliders to 0.5
     if selected_sprite == None:
