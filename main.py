@@ -43,6 +43,7 @@ class sprite():
 
     def play(self):
         if not self.playing:
+            self.sound = pygame.mixer.Sound(self.mod_sound_file)
             self.sound.play(loops=self.looping) 
             if self.looping == -1:
                 self.playing = True
