@@ -48,6 +48,9 @@ class sprite():
             if self.looping == -1:
                 self.playing = True
 
+    def dance(self):
+        self.image = pygame.transform.flip(self.image, True, False)
+
     def stop(self):
         if self.playing:
             self.sound.stop()
