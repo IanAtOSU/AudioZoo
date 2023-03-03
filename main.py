@@ -43,9 +43,13 @@ class sprite():
 
     def play(self):
         if not self.playing:
+            self.sound = pygame.mixer.Sound(self.mod_sound_file)
             self.sound.play(loops=self.looping) 
             if self.looping == -1:
                 self.playing = True
+
+    def dance(self):
+        self.image = pygame.transform.flip(self.image, True, False)
 
     def stop(self):
         if self.playing:
@@ -201,7 +205,7 @@ def drag_slider(mouse_x):
         sliders[len(sliders)-1].x = initsliderpos[0]+mouse_x-initmousepos[0]
 
 #game loop
-while True:
+while True:    
     #Update looping button to currently selected sprite
     if selected_sprite == None:
         loopSpriteButton.text = "Looping: N/A"
@@ -210,6 +214,12 @@ while True:
             loopSpriteButton.text = "Looping: Y"
         else:
             loopSpriteButton.text = "Looping: N"
+
+    #DN
+    #Loop through sprites and check if they are looping, if they are, dance
+    for i in range(len(sprites)):
+        if sprites[i].looping == -1:
+            sprites[i].dance()
     
     #Event loop
     for event in pygame.event.get():
@@ -279,6 +289,9 @@ while True:
                 #pygame.mixer.Sound(sprites[len(sprites)-1].mod_sound_file).play()
                 sprites[len(sprites)-1].rect.x = initspritepos[0]
                 sprites[len(sprites)-1].rect.y = initspritepos[1] 
+                #---------------------------------------
+                #dance sprites
+                #---------------------------------------
 
         elif event.type == pygame.MOUSEMOTION:
             #If we are currently dragging something, drag it

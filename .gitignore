@@ -1,6 +1,3 @@
 
 *.pyc
-audioOutput/mcoof.wav
-Sounds/VolOut_bruh.wav
-Sounds/VolOut_emergency.wav
-Sounds/VolOut_soviet.wav
+audioOutput/
