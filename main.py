@@ -10,6 +10,7 @@ pygame.init()
 pygame.mixer.init()
 pygame.font.init()
 game_font=pygame.font.SysFont("Times New Roman",30)
+small_font=pygame.font.SysFont("Times New Roman",15)
 
 
 #set up screen
@@ -104,7 +105,7 @@ class slider():
 
 
 class textBox:
-    def __init__(self,name="",x=0,y=0,width=100,height=20,background=(115,105,215),border=(0,0,0),textcolor=(0,0,0),text=""):
+    def __init__(self,name="",x=0,y=0,width=100,height=20,background=(115,105,215),border=(0,0,0),textcolor=(0,0,0),text="",font=game_font):
         self.name=name
         self.x=x
         self.y = y
@@ -114,10 +115,11 @@ class textBox:
         self.border=border
         self.textcolor=textcolor
         self.text=text
+        self.font=font
     def draw(self):
         self.rect = pygame.draw.rect(screen,self.background,(self.x,self.y,self.width,self.height))
         pygame.draw.rect(screen,self.border,(self.x,self.y,self.width,self.height),width=1)
-        text_surface=game_font.render(self.text,False,self.textcolor)
+        text_surface=self.font.render(self.text,False,self.textcolor)
         text_rect=text_surface.get_rect(center=(self.x+self.width/2,self.y+self.height/2))
         screen.blit(text_surface,text_rect)
 
@@ -149,13 +151,18 @@ loopSpriteButton = textBox(name="loopSprite",x=501,y=height-50,width=250,height=
 #change background button
 changeBGButton = textBox(name="changeBG", x=1, y= height-100, width= 250, height = 50, text = "Change background")
 
+#Slider labels
+volume_label = textBox(x=width-500,y=height-30,width=50,height=20,text="Volume",font=small_font)
+pitch_label = textBox(x=width-500,y=height-55,width=50,height=20,text="Pitch",font=small_font)
+speed_label = textBox(x=width-500,y=height-80,width=50,height=20,text="Speed",font=small_font)
+
 #Create sliders
 volume_slider = slider(name="Volume",y=height-20)#previously(300, 700, 600)
 pitch_slider = slider(name="Pitch",y=height-45)
 speed_slider = slider(name="Speed",y=height-70)
 
 
-buttons = [addSpriteButton, removeSpriteButton, loopSpriteButton, changeBGButton]
+buttons = [addSpriteButton, removeSpriteButton, loopSpriteButton, changeBGButton,volume_label,pitch_label,speed_label]
 sliders = [volume_slider,pitch_slider,speed_slider]
 
 
@@ -321,6 +328,10 @@ while True:
     #Draw Sprites
     for i in range(len(sprites)):
         screen.blit(sprites[i].image, sprites[i].rect)
+
+    #Draw selected sprite border
+    if selected_sprite!=None:
+        pygame.draw.rect(screen,(255,0,0),selected_sprite.rect,1,)
     
     #Draw Buttons
     for button in buttons:
