@@ -14,6 +14,7 @@ small_font=pygame.font.SysFont("Times New Roman",15)
 
 
 #set up screen
+clock = pygame.time.Clock()
 size = width, height = 1400, 800
 screen = pygame.display.set_mode(size)
 BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400,800))
@@ -134,6 +135,8 @@ dragging_slider = None
 initmousepos=[0,0]#initial position of mouse when clicking on sprite, used to calculate where the sprite should be
 initspritepos=[0,0]#initial position of sprite when clicking on sprite
 
+measure_stick = pygame.Rect(100, 110, 6, 160)
+
 #Create widgets
 
 
@@ -210,6 +213,8 @@ def drag_slider(mouse_x):
         sliders[len(sliders)-1].x = sliders[len(sliders)-1].minX
     else:
         sliders[len(sliders)-1].x = initsliderpos[0]+mouse_x-initmousepos[0]
+
+played_already = set([])
 
 #game loop
 while True:    
@@ -324,9 +329,25 @@ while True:
             
     screen.fill((0,0,0))
     screen.blit(BG, (0,0))
-    
+
+    pygame.draw.rect(screen, "Red", measure_stick)
+    if measure_stick.x < width-20:
+        measure_stick.x = measure_stick.x + 2
+    else:
+        measure_stick.x = 100
+        if measure_stick.y <= (height-measure_stick.height-100):
+            measure_stick.y += measure_stick.height
+        else:
+            measure_stick.y = 110
+        played_already = set([]) #empty the played already list
+
+    pygame.draw.rect(screen, "Black", pygame.Rect(100, 0, 10, height))
+
     #Draw Sprites
     for i in range(len(sprites)):
+        if (sprites[i].rect.colliderect(measure_stick) and sprites[i] not in played_already):
+            sprites[i].play()
+            played_already.add(sprites[i])
         screen.blit(sprites[i].image, sprites[i].rect)
 
     #Draw selected sprite border
@@ -341,5 +362,7 @@ while True:
     for slider in sliders:
         slider.draw()
         #print(slider.get_level())
+
+    clock.tick(60)
 
     pygame.display.flip()
