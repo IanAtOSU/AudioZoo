@@ -10,6 +10,7 @@ pygame.init()
 pygame.mixer.init()
 pygame.font.init()
 game_font=pygame.font.SysFont("Times New Roman",30)
+clock = pygame.time.Clock()
 
 
 #set up screen
@@ -149,7 +150,7 @@ loopSpriteButton = textBox(name="loopSprite",x=501,y=height-50,width=250,height=
 changeBGButton = textBox(name="changeBG", x=1, y= height-100, width= 250, height = 50, text = "Change background")
 #key button binds sprite.play to different keyboard input
 keyButton = textBox(name="changeKey", x=251, y= height-100, width= 75, height = 50, text = "g")
-changeKeyNotif = textBox(name="changeKeyNotif", x=width/2, y= height/2, width= 150, height = 50, text = "Press any key")
+changeKeyNotif = textBox(name="changeKeyNotif", x=width/2-100, y= height/2-50, width= 200, height = 50, text = "Press any key")
 
 #Create sliders
 volume_slider = slider(name="Volume",y=height-20)#previously(300, 700, 600)
@@ -211,7 +212,9 @@ while True:
     #Update looping button to currently selected sprite
     if selected_sprite == None:
         loopSpriteButton.text = "Looping: N/A"
+        keyButton.text = "N/A"
     else:
+        keyButton.text = pygame.key.name(selected_sprite.key)
         if selected_sprite.looping == -1: #-1 means is looping
             loopSpriteButton.text = "Looping: Y"
         else:
@@ -243,15 +246,16 @@ while True:
 
         
             elif keyButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]) and selected_sprite != None:
-                print("pressed the button")
-                while True:
-                    print("inside while true")
+                flag=True
+                while flag:
                     changeKeyNotif.draw()
-                    for i in range(len(pygame.key.get_pressed())):
-                        if pygame.key.get_pressed()[i]:
-                            selected_sprite.key = i
-                            print("breaking")
-                            break
+                    for event2 in pygame.event.get():
+                        if event2.type == pygame.KEYDOWN:
+                            selected_sprite.key  = event2.key
+                            flag = False
+                    
+                    pygame.display.flip()
+                    clock.tick(30)
                     
             else:
                 #SUPER IMPORTANT
