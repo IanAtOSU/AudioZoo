@@ -41,6 +41,8 @@ class sprite():
         self.sound = pygame.mixer.Sound(self.mod_sound_file)
         self.playing = False
 
+        self.key = pygame.key.key_code("g")
+
     def play(self):
         if not self.playing:
             self.sound = pygame.mixer.Sound(self.mod_sound_file)
@@ -145,6 +147,9 @@ removeSpriteButton = textBox(name="removeSprite",x=251,y=height-50,width=250,hei
 loopSpriteButton = textBox(name="loopSprite",x=501,y=height-50,width=250,height=50,text="Looping: N")
 #change background button
 changeBGButton = textBox(name="changeBG", x=1, y= height-100, width= 250, height = 50, text = "Change background")
+#key button binds sprite.play to different keyboard input
+keyButton = textBox(name="changeKey", x=251, y= height-100, width= 75, height = 50, text = "g")
+changeKeyNotif = textBox(name="changeKeyNotif", x=width/2, y= height/2, width= 150, height = 50, text = "Press any key")
 
 #Create sliders
 volume_slider = slider(name="Volume",y=height-20)#previously(300, 700, 600)
@@ -152,7 +157,7 @@ pitch_slider = slider(name="Pitch",y=height-45)
 speed_slider = slider(name="Speed",y=height-70)
 
 
-buttons = [addSpriteButton, removeSpriteButton, loopSpriteButton, changeBGButton]
+buttons = [addSpriteButton, removeSpriteButton, loopSpriteButton, changeBGButton, keyButton]
 sliders = [volume_slider,pitch_slider,speed_slider]
 
 
@@ -236,6 +241,18 @@ while True:
                 if BG_temp != '':
                     BG = pygame.transform.scale(pygame.image.load(BG_temp), (1400,800))
 
+        
+            elif keyButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]) and selected_sprite != None:
+                print("pressed the button")
+                while True:
+                    print("inside while true")
+                    changeKeyNotif.draw()
+                    for i in range(len(pygame.key.get_pressed())):
+                        if pygame.key.get_pressed()[i]:
+                            selected_sprite.key = i
+                            print("breaking")
+                            break
+                    
             else:
                 #SUPER IMPORTANT
                 #selected sprite stores the last sprite clicked on. Nonetype if the background was clicked or selected_sprite got deleted
@@ -287,6 +304,11 @@ while True:
                 drag_sprite(event.pos[0], event.pos[1])
             if dragging_slider != None:
                 drag_slider(event.pos[0])
+
+        for sprite in sprites:
+            if pygame.key.get_pressed()[sprite.key]:
+                sprite.play()
+
 
     #If a slider is not currently being dragged, set slider levels to that of the currently selected sprite
     if selected_sprite != None and dragging_slider == None:
