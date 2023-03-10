@@ -135,7 +135,7 @@ dragging_slider = None
 initmousepos=[0,0]#initial position of mouse when clicking on sprite, used to calculate where the sprite should be
 initspritepos=[0,0]#initial position of sprite when clicking on sprite
 
-measure_stick = pygame.Rect(100, 110, 6, 160)
+measure_stick = pygame.Rect(100, 4, 6, 160)
 
 #Create widgets
 
@@ -335,10 +335,10 @@ while True:
         measure_stick.x = measure_stick.x + 2
     else:
         measure_stick.x = 100
-        if measure_stick.y <= (height-measure_stick.height-100):
-            measure_stick.y += measure_stick.height
+        if measure_stick.y <= (height-measure_stick.height-200):
+            measure_stick.y += measure_stick.height+4
         else:
-            measure_stick.y = 110
+            measure_stick.y = 4
         played_already = set([]) #empty the played already list
 
     pygame.draw.rect(screen, "Black", pygame.Rect(100, 0, 10, height))
