@@ -4,6 +4,7 @@ import pygame
 import math
 import tkinter.filedialog
 import audio_functions
+import random
 
 #pygame Initialization
 pygame.init()
@@ -20,9 +21,12 @@ BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400
 
 class sprite():
     def __init__(self, image_file="Sprites/sprite0.gif", sound_file="Sounds/metalgear.wav", width = 90, height = 90, initPos=(100,200)):
-        self.initPos = initPos
+        #self.initPos = initPos
         self.width = width
         self.height = height
+
+        # Modify the initPos argument to be a random position on the screen
+        self.initPos = (random.randint(0, width - self.width), random.randint(0, height - self.height))
         
         self.image_file = image_file
         self.image = pygame.transform.scale(pygame.image.load(self.image_file), (self.width, self.height))
@@ -37,6 +41,7 @@ class sprite():
         self.speed = 0.5
 
         self.looping = 0 #0 = not looping; -1 = is looping
+        
         # RC: Added Code
         self.sound = pygame.mixer.Sound(self.mod_sound_file)
         self.playing = False
@@ -63,6 +68,20 @@ class sprite():
         
         self.image = pygame.transform.scale(pygame.image.load(self.image_file), (self.width, self.height))
         self.rect = pygame.Rect(self.rect.x, self.rect.y, self.width, self.height)
+
+    #def change_size(self):
+        #global dragging_slider
+
+        # Get the level of the size slider
+        #size_level = dragging_slider.get_level()
+
+        # Calculate the new width and height based on the size level
+        #self.width = math.floor(( abs(size_level) ** (1/3) ) * 200  + 20)
+        #self.height = math.floor(( abs(size_level) ** (1/3) ) * 200 + 20)
+
+        # Update the sprite image with the new size
+        #self.image = pygame.transform.scale(pygame.image.load(self.image_file), (self.width, self.height))
+        #self.rect = pygame.Rect(self.rect.x, self.rect.y, self.width, self.height)
 
     def __del__(self):
         print("deleted sprite with audio file: " + str(self.orig_sound_file))
@@ -119,6 +138,10 @@ class textBox:
 
 
 sprites = [sprite("Sprites/baloon.png", "Sounds/bruh.wav"), sprite("Sprites/Cactus.png", "Sounds/emergency.wav")]
+# When adding a new sprite, call the sprite constructor without the initPos argument
+sprites.append(sprite("Sprites/baloon.png", "Sounds/bruh.wav"))
+
+
 dragging_sprite = False
 dragging_slider = None
 initmousepos=[0,0]#initial position of mouse when clicking on sprite, used to calculate where the sprite should be
@@ -143,6 +166,8 @@ changeBGButton = textBox(name="changeBG", x=1, y= height-100, width= 250, height
 
 #Create slider
 volume_slider = slider()#previously(300, 700, 600)
+#size_slider = slider()
+#size_slider = slider(minX=width-450, maxX=width-50, y=height-43, color=(115,105,215), slidercolor=[0,200,50])
 
 buttons = [addSpriteButton, removeSpriteButton, loopSpriteButton, changeBGButton]
 sliders = [volume_slider]
@@ -178,6 +203,10 @@ def check_drag_slider():
             sliders.remove(tmp)
             sliders.append(tmp)
             break #only interact with the first sprite found
+
+        # check if the size slider was clicked
+        #elif size_slider.rect.collidepoint(pygame.mouse.get_pos()):
+            #selected_slider = size_slider
     return tmp
 
 def drag_sprite(mouse_x, mouse_y):
@@ -257,6 +286,10 @@ while True:
                 # set the selected_sprite's attributes to the dragged slider's position
                 if dragging_slider == volume_slider:
                     selected_sprite.change_volume()
+                #elif dragging_slider == size_slider:
+                    #selected_sprite.change_size()
+                    # set the dragging_slider to None to indicate that we are no longer dragging a slider
+                    #dragging_slider = None
                 dragging_slider = None
             #if we did not click on a slider, and we did not drag our mouse since the last MOUSEBUTTONDOWN, and selected_sprite exists, play the sound
             elif abs(event.pos[0]-initmousepos[0]) < 5 and abs(event.pos[1]-initmousepos[1]) < 5 and selected_sprite != None: #if the sprite was not dragged
