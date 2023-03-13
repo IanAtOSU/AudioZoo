@@ -71,17 +71,15 @@ class sprite():
         
     def update_mod_sound_file(self):
         self.mod_sound_file = self.orig_sound_file
-        print(self.mod_sound_file)
         if self.volume != 0.5:
             self.mod_sound_file = audio_functions.changeVolume(self.mod_sound_file, self.volume)
         if self.pitch != 0.5:
             self.mod_sound_file = audio_functions.changePitch(self.mod_sound_file, self.pitch)
         if self.speed != 0.5:
             self.mod_sound_file = audio_functions.changeSpeed(self.mod_sound_file, self.speed)
-        print(self.mod_sound_file)
      
     def __del__(self):
-        print("deleted sprite with audio file: " + str(self.orig_sound_file))
+        None
 
 
 class slider():
@@ -263,7 +261,6 @@ while True:
                 else:
                     selected_sprite.looping = -1
             elif changeBGButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
-                print( os.getcwd()+"\\Background\\" )
                 BG_temp = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Background\\")
                 if BG_temp != '':
                     BG = pygame.transform.scale(pygame.image.load(BG_temp), (1400,800))
@@ -379,7 +376,6 @@ while True:
     #Draw Sliders
     for slider in sliders:
         slider.draw()
-        #print(slider.get_level())
 
     clock.tick(60)
 

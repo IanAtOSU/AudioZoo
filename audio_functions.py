@@ -34,8 +34,7 @@ def changeVolume(audio_path, multiplier):
 
 #Pitches the audio file up or down
 def changePitch(audio_path, multiplier):
-    Hz_shift = (multiplier-0.5)*400 #range of change from -200 to +200 Hertz
-    print(Hz_shift)
+    Hz_shift = (multiplier-0.5)*1200 #range of change from -600 to +600 Hertz
     audioIn = wave.open(audio_path, 'r')
     p = list(audioIn.getparams())
     p[3] = 0 #(Number of samples will be set by writeframes)
@@ -77,7 +76,6 @@ def changePitch(audio_path, multiplier):
 
 def changeSpeed(audio_path, multiplier):
     multiplier = pow(multiplier,2)*3+0.25 #range from 0.25x to 3.25x
-    print(multiplier)
     audioIn = wave.open(audio_path, 'rb')
     rate = audioIn.getframerate()
     frames = audioIn.readframes(-1)
