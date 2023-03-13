@@ -70,7 +70,15 @@ class sprite():
         self.rect = pygame.Rect(self.rect.x, self.rect.y, self.width, self.height)
         
     def update_mod_sound_file(self):
-        self.mod_sound_file=audio_functions.changeAll(self.orig_sound_file,self.volume,self.pitch,self.speed)
+        self.mod_sound_file = self.orig_sound_file
+        print(self.mod_sound_file)
+        if self.volume != 0.5:
+            self.mod_sound_file = audio_functions.changeVolume(self.mod_sound_file, self.volume)
+        if self.pitch != 0.5:
+            self.mod_sound_file = audio_functions.changePitch(self.mod_sound_file, self.pitch)
+        if self.speed != 0.5:
+            self.mod_sound_file = audio_functions.changeSpeed(self.mod_sound_file, self.speed)
+        print(self.mod_sound_file)
      
     def __del__(self):
         print("deleted sprite with audio file: " + str(self.orig_sound_file))
@@ -153,6 +161,8 @@ removeSpriteButton = textBox(name="removeSprite",x=251,y=height-50,width=250,hei
 loopSpriteButton = textBox(name="loopSprite",x=501,y=height-50,width=250,height=50,text="Looping: N")
 #change background button
 changeBGButton = textBox(name="changeBG", x=1, y= height-100, width= 250, height = 50, text = "Change background")
+#Reset sprite audio button
+resetButton = textBox(name="reset", x=251, y = height-100, width = 250, height = 50, text = "Reset Sprite Audio")
 
 #Slider labels
 volume_label = textBox(x=width-500,y=height-30,width=50,height=20,text="Volume",font=small_font)
@@ -165,7 +175,8 @@ pitch_slider = slider(name="Pitch",y=height-45)
 speed_slider = slider(name="Speed",y=height-70)
 
 
-buttons = [addSpriteButton, removeSpriteButton, loopSpriteButton, changeBGButton,volume_label,pitch_label,speed_label]
+buttons = [addSpriteButton, removeSpriteButton, changeBGButton,
+            loopSpriteButton, volume_label,pitch_label,speed_label, resetButton]
 sliders = [volume_slider,pitch_slider,speed_slider]
 
 
@@ -256,6 +267,13 @@ while True:
                 BG_temp = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Background\\")
                 if BG_temp != '':
                     BG = pygame.transform.scale(pygame.image.load(BG_temp), (1400,800))
+            elif resetButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+                for s in sliders:
+                    s.set_level(0.5)
+                selected_sprite.volume = 0.5
+                selected_sprite.pitch = 0.5
+                selected_sprite.speed = 0.5
+                selected_sprite.update_mod_sound_file()
 
             else:
                 #SUPER IMPORTANT
@@ -291,7 +309,7 @@ while True:
                     selected_sprite.pitch = dragging_slider.get_level()
                 elif dragging_slider.name == "Speed":
                     selected_sprite.speed = dragging_slider.get_level()
-                selected_sprite.update_mod_sound_file();
+                selected_sprite.update_mod_sound_file()
 
                 dragging_slider = None
             #if we did not click on a slider, and we did not drag our mouse since the last MOUSEBUTTONDOWN, and selected_sprite exists, play the sound
