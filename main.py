@@ -255,11 +255,12 @@ while True:
                 if image != '' and sound != '':
                     sprites.append(sprite(image, sound))
             elif loopSpriteButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
-                if selected_sprite.looping == -1:
-                    selected_sprite.stop()
-                    selected_sprite.looping = 0
-                else:
-                    selected_sprite.looping = -1
+                if selected_sprite != None:
+                    if selected_sprite.looping == -1:
+                        selected_sprite.stop()
+                        selected_sprite.looping = 0
+                    else:
+                        selected_sprite.looping = -1
             elif changeBGButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
                 BG_temp = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Background\\")
                 if BG_temp != '':
