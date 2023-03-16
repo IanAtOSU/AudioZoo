@@ -22,7 +22,7 @@ screen = pygame.display.set_mode(size)
 BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400,800))
 
 
-class sprite():
+class audio_sprite():
     def __init__(self, image_file="Sprites/sprite0.gif", sound_file="Sounds/metalgear.wav", width = 90, height = 90, initPos=(100,200)):
         self.initPos = initPos
         self.width = width
@@ -61,27 +61,20 @@ class sprite():
         if self.playing:
             self.sound.stop()
             self.playing = False
-
-    def change_volume(self):
-        global dragging_slider
-        self.volume = dragging_slider.get_level()
-        self.mod_sound_file = audio_functions.changeVolume(self.orig_sound_file, self.volume)
-        self.sound = pygame.mixer.Sound(self.mod_sound_file)
-        self.width = math.floor(( abs(dragging_slider.get_level()) ** (1/3) ) * 200  + 20)
-        self.height = math.floor(( abs(dragging_slider.get_level()) ** (1/3) ) * 200 + 20)
-        
-        self.image = pygame.transform.scale(pygame.image.load(self.image_file), (self.width, self.height))
-        self.rect = pygame.Rect(self.rect.x, self.rect.y, self.width, self.height)
         
     def update_mod_sound_file(self):
         self.mod_sound_file = self.orig_sound_file
         if self.volume != 0.5:
-            self.mod_sound_file = audio_functions.changeVolume(self.mod_sound_file, self.volume)
+            self.mod_sound_file = audio_functions.changeVolume(self.mod_sound_file, hash((self.mod_sound_file, self.image_file, self.initPos)),  self.volume)
         if self.pitch != 0.5:
-            self.mod_sound_file = audio_functions.changePitch(self.mod_sound_file, self.pitch)
+            self.mod_sound_file = audio_functions.changePitch(self.mod_sound_file, hash((self.mod_sound_file, self.image_file, self.initPos)), self.pitch)
         if self.speed != 0.5:
-            self.mod_sound_file = audio_functions.changeSpeed(self.mod_sound_file, self.speed)
-     
+            self.mod_sound_file = audio_functions.changeSpeed(self.mod_sound_file, hash((self.mod_sound_file, self.image_file, self.initPos)), self.speed)
+    
+    def __hash__(self) -> int:
+        return hash((self.orig_sound_file, self.image_file, self.initPos))
+        pass
+
     def __del__(self):
         None
 
@@ -139,7 +132,7 @@ class textBox:
 
 
 
-sprites = [sprite("Sprites/baloon.png", "Sounds/bruh.wav"), sprite("Sprites/Cactus.png", "Sounds/emergency.wav")]
+sprites = [audio_sprite("Sprites/baloon.png", "Sounds/bruh.wav"), audio_sprite("Sprites/Cactus.png", "Sounds/emergency.wav")]
 dragging_sprite = False
 dragging_slider = None
 initmousepos=[0,0]#initial position of mouse when clicking on sprite, used to calculate where the sprite should be
@@ -253,7 +246,9 @@ while True:
     
     #Event loop
     for event in pygame.event.get():
-        if event.type == pygame.QUIT: sys.exit()
+        if event.type == pygame.QUIT: 
+            audio_functions.deleteOutfiles()
+            sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN: 
 
             #Button click checks need to be first so they don't set selected_sprite to None
@@ -262,7 +257,7 @@ while True:
                 image = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sprites\\")
                 sound = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sounds\\")
                 if image != '' and sound != '':
-                    sprites.append(sprite(image, sound))
+                    sprites.append(audio_sprite(image_file=image, sound_file=sound))
             elif loopSpriteButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
                 if selected_sprite.looping == -1:
                     selected_sprite.stop()
