@@ -9,17 +9,17 @@ Notes:
 '''
 
 def filenamefrompath(name):
-    result="";
+    result=""
     for c in name:
         if c=='/' or c=='\\':
-            result="";
+            result=""
         else:
-            result+=c;
-    return result;
+            result+=c
+    return result
 
 #Changes the audio file's volume
 def changeVolume(audio_path, multiplier):
-    multiplier = multiplier*3 #Range from 0 to 3
+    multiplier = multiplier*2 #Range from 0 to 2
 
     audioIn = wave.open(audio_path, 'rb')
     p = audioIn.getparams()
@@ -34,12 +34,14 @@ def changeVolume(audio_path, multiplier):
 
 #Pitches the audio file up or down
 def changePitch(audio_path, multiplier):
-    Hz_shift = (multiplier-0.5)*400 #range of change from -200 to +200 Hertz 
-    audioIn = wave.open("Sounds/" + audio_path, 'r')
+    Hz_shift = (multiplier-0.5)*1200 #range of change from -600 to +600 Hertz
+    audioIn = wave.open(audio_path, 'r')
     p = list(audioIn.getparams())
     p[3] = 0 #(Number of samples will be set by writeframes)
 
-    audioOut = wave.open("audioOutput/" + audio_path, 'w')
+    outpath = "Sounds/PitchOut_" + audio_path[audio_path.rfind("/")+1:]
+
+    audioOut = wave.open(outpath, 'w')
     audioOut.setparams(tuple(p))
 
     #Audio processing:
@@ -70,20 +72,24 @@ def changePitch(audio_path, multiplier):
 
     audioIn.close()
     audioOut.close() 
+    return outpath
 
 def changeSpeed(audio_path, multiplier):
-    multiplier = (multiplier-0.5)*6 #range from -3x to +3x
-    audioIn = wave.open("Sounds/" + audio_path, 'rb')
+    multiplier = pow(multiplier,2)*3+0.25 #range from 0.25x to 3.25x
+    audioIn = wave.open(audio_path, 'rb')
     rate = audioIn.getframerate()
     frames = audioIn.readframes(-1)
 
-    audioOut = wave.open("audioOutput/" + audio_path, 'wb')
+    outpath = "Sounds/SpeedOut_" + audio_path[audio_path.rfind("/")+1:]
+
+    audioOut = wave.open(outpath, 'wb')
 
     audioOut.setparams(audioIn.getparams())
-    audioOut.setframerate(rate*multiplier)
+    audioOut.setframerate(int(rate*multiplier))
     audioOut.writeframes(frames)
     audioIn.close()
     audioOut.close()
+    return outpath
 
 def changeAll(audio_path,volume,pitch,speed):
 
@@ -98,7 +104,7 @@ def changeAll(audio_path,volume,pitch,speed):
     sections = int(audioIn.getnframes()/size) #sections of file
     shift = int(Hz_shift//frac)
 
-    frames=b"";
+    frames=b""
     #Get the data and split into left and right audio channels
     for n in range(sections):
         data = np.frombuffer(audioIn.readframes(size), dtype=np.int16)

@@ -13,7 +13,9 @@ game_font=pygame.font.SysFont("Times New Roman",30)
 clock = pygame.time.Clock()
 
 
+
 #set up screen
+clock = pygame.time.Clock()
 size = width, height = 1400, 800
 screen = pygame.display.set_mode(size)
 BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400,800))
@@ -51,6 +53,9 @@ class sprite():
             if self.looping == -1:
                 self.playing = True
 
+    def dance(self):
+        self.image = pygame.transform.flip(self.image, True, False)
+
     def stop(self):
         if self.playing:
             self.sound.stop()
@@ -68,10 +73,16 @@ class sprite():
         self.rect = pygame.Rect(self.rect.x, self.rect.y, self.width, self.height)
         
     def update_mod_sound_file(self):
-        self.mod_sound_file=audio_functions.changeAll(self.orig_sound_file,self.volume,self.pitch,self.speed)
+        self.mod_sound_file = self.orig_sound_file
+        if self.volume != 0.5:
+            self.mod_sound_file = audio_functions.changeVolume(self.mod_sound_file, self.volume)
+        if self.pitch != 0.5:
+            self.mod_sound_file = audio_functions.changePitch(self.mod_sound_file, self.pitch)
+        if self.speed != 0.5:
+            self.mod_sound_file = audio_functions.changeSpeed(self.mod_sound_file, self.speed)
      
     def __del__(self):
-        print("deleted sprite with audio file: " + str(self.orig_sound_file))
+        None
 
 
 class slider():
@@ -104,7 +115,7 @@ class slider():
 
 
 class textBox:
-    def __init__(self,name="",x=0,y=0,width=100,height=20,background=(115,105,215),border=(0,0,0),textcolor=(0,0,0),text=""):
+    def __init__(self,name="",x=0,y=0,width=100,height=20,background=(115,105,215),border=(0,0,0),textcolor=(0,0,0),text="",font=game_font):
         self.name=name
         self.x=x
         self.y = y
@@ -114,10 +125,11 @@ class textBox:
         self.border=border
         self.textcolor=textcolor
         self.text=text
+        self.font=font
     def draw(self):
         self.rect = pygame.draw.rect(screen,self.background,(self.x,self.y,self.width,self.height))
         pygame.draw.rect(screen,self.border,(self.x,self.y,self.width,self.height),width=1)
-        text_surface=game_font.render(self.text,False,self.textcolor)
+        text_surface=self.font.render(self.text,False,self.textcolor)
         text_rect=text_surface.get_rect(center=(self.x+self.width/2,self.y+self.height/2))
         screen.blit(text_surface,text_rect)
 
@@ -131,6 +143,8 @@ dragging_sprite = False
 dragging_slider = None
 initmousepos=[0,0]#initial position of mouse when clicking on sprite, used to calculate where the sprite should be
 initspritepos=[0,0]#initial position of sprite when clicking on sprite
+
+measure_stick = pygame.Rect(100, 4, 6, 160)
 
 #Create widgets
 
@@ -151,6 +165,13 @@ changeBGButton = textBox(name="changeBG", x=1, y= height-100, width= 250, height
 #key button binds sprite.play to different keyboard input
 keyButton = textBox(name="changeKey", x=251, y= height-100, width= 75, height = 50, text = "g")
 changeKeyNotif = textBox(name="changeKeyNotif", x=width/2-100, y= height/2-50, width= 200, height = 50, text = "Press any key")
+#Reset sprite audio button
+resetButton = textBox(name="reset", x=251, y = height-100, width = 250, height = 50, text = "Reset Sprite Audio")
+
+#Slider labels
+volume_label = textBox(x=width-500,y=height-30,width=50,height=20,text="Volume",font=small_font)
+pitch_label = textBox(x=width-500,y=height-55,width=50,height=20,text="Pitch",font=small_font)
+speed_label = textBox(x=width-500,y=height-80,width=50,height=20,text="Speed",font=small_font)
 
 #Create sliders
 volume_slider = slider(name="Volume",y=height-20)#previously(300, 700, 600)
@@ -158,7 +179,8 @@ pitch_slider = slider(name="Pitch",y=height-45)
 speed_slider = slider(name="Speed",y=height-70)
 
 
-buttons = [addSpriteButton, removeSpriteButton, loopSpriteButton, changeBGButton, keyButton]
+buttons = [addSpriteButton, removeSpriteButton, changeBGButton,
+            loopSpriteButton, volume_label,pitch_label,speed_label, resetButton, keyButton]
 sliders = [volume_slider,pitch_slider,speed_slider]
 
 
@@ -207,8 +229,10 @@ def drag_slider(mouse_x):
     else:
         sliders[len(sliders)-1].x = initsliderpos[0]+mouse_x-initmousepos[0]
 
+played_already = set([])
+
 #game loop
-while True:
+while True:    
     #Update looping button to currently selected sprite
     if selected_sprite == None:
         loopSpriteButton.text = "Looping: N/A"
@@ -219,6 +243,12 @@ while True:
             loopSpriteButton.text = "Looping: Y"
         else:
             loopSpriteButton.text = "Looping: N"
+
+    #DN
+    #Loop through sprites and check if they are looping, if they are, dance
+    for i in range(len(sprites)):
+        if sprites[i].looping == -1:
+            sprites[i].dance()
     
     #Event loop
     for event in pygame.event.get():
@@ -239,10 +269,16 @@ while True:
                 else:
                     selected_sprite.looping = -1
             elif changeBGButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
-                print( os.getcwd()+"\\Background\\" )
                 BG_temp = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Background\\")
                 if BG_temp != '':
                     BG = pygame.transform.scale(pygame.image.load(BG_temp), (1400,800))
+            elif resetButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+                for s in sliders:
+                    s.set_level(0.5)
+                selected_sprite.volume = 0.5
+                selected_sprite.pitch = 0.5
+                selected_sprite.speed = 0.5
+                selected_sprite.update_mod_sound_file()
 
         
             elif keyButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]) and selected_sprite != None:
@@ -291,7 +327,7 @@ while True:
                     selected_sprite.pitch = dragging_slider.get_level()
                 elif dragging_slider.name == "Speed":
                     selected_sprite.speed = dragging_slider.get_level()
-                selected_sprite.update_mod_sound_file();
+                selected_sprite.update_mod_sound_file()
 
                 dragging_slider = None
             #if we did not click on a slider, and we did not drag our mouse since the last MOUSEBUTTONDOWN, and selected_sprite exists, play the sound
@@ -301,6 +337,9 @@ while True:
                 #pygame.mixer.Sound(sprites[len(sprites)-1].mod_sound_file).play()
                 sprites[len(sprites)-1].rect.x = initspritepos[0]
                 sprites[len(sprites)-1].rect.y = initspritepos[1] 
+                #---------------------------------------
+                #dance sprites
+                #---------------------------------------
 
         elif event.type == pygame.MOUSEMOTION:
             #If we are currently dragging something, drag it
@@ -331,10 +370,30 @@ while True:
             
     screen.fill((0,0,0))
     screen.blit(BG, (0,0))
-    
+
+    pygame.draw.rect(screen, "Red", measure_stick)
+    if measure_stick.x < width-20:
+        measure_stick.x = measure_stick.x + 2
+    else:
+        measure_stick.x = 100
+        if measure_stick.y <= (height-measure_stick.height-200):
+            measure_stick.y += measure_stick.height+4
+        else:
+            measure_stick.y = 4
+        played_already = set([]) #empty the played already list
+
+    pygame.draw.rect(screen, "Black", pygame.Rect(100, 0, 10, height))
+
     #Draw Sprites
     for i in range(len(sprites)):
+        if (sprites[i].rect.colliderect(measure_stick) and sprites[i] not in played_already):
+            sprites[i].play()
+            played_already.add(sprites[i])
         screen.blit(sprites[i].image, sprites[i].rect)
+
+    #Draw selected sprite border
+    if selected_sprite!=None:
+        pygame.draw.rect(screen,(255,0,0),selected_sprite.rect,1,)
     
     #Draw Buttons
     for button in buttons:
@@ -343,6 +402,7 @@ while True:
     #Draw Sliders
     for slider in sliders:
         slider.draw()
-        #print(slider.get_level())
+
+    clock.tick(60)
 
     pygame.display.flip()
