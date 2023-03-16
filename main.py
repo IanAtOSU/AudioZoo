@@ -10,7 +10,8 @@ pygame.init()
 pygame.mixer.init()
 pygame.font.init()
 game_font=pygame.font.SysFont("Times New Roman",30)
-small_font=pygame.font.SysFont("Times New Roman",15)
+clock = pygame.time.Clock()
+
 
 
 #set up screen
@@ -42,6 +43,8 @@ class sprite():
         # RC: Added Code
         self.sound = pygame.mixer.Sound(self.mod_sound_file)
         self.playing = False
+
+        self.key = pygame.key.key_code("g")
 
     def play(self):
         if not self.playing:
@@ -159,6 +162,9 @@ removeSpriteButton = textBox(name="removeSprite",x=251,y=height-50,width=250,hei
 loopSpriteButton = textBox(name="loopSprite",x=501,y=height-50,width=250,height=50,text="Looping: N")
 #change background button
 changeBGButton = textBox(name="changeBG", x=1, y= height-100, width= 250, height = 50, text = "Change background")
+#key button binds sprite.play to different keyboard input
+keyButton = textBox(name="changeKey", x=251, y= height-100, width= 75, height = 50, text = "g")
+changeKeyNotif = textBox(name="changeKeyNotif", x=width/2-100, y= height/2-50, width= 200, height = 50, text = "Press any key")
 #Reset sprite audio button
 resetButton = textBox(name="reset", x=251, y = height-100, width = 250, height = 50, text = "Reset Sprite Audio")
 
@@ -174,7 +180,7 @@ speed_slider = slider(name="Speed",y=height-70)
 
 
 buttons = [addSpriteButton, removeSpriteButton, changeBGButton,
-            loopSpriteButton, volume_label,pitch_label,speed_label, resetButton]
+            loopSpriteButton, volume_label,pitch_label,speed_label, resetButton, keyButton]
 sliders = [volume_slider,pitch_slider,speed_slider]
 
 
@@ -230,7 +236,9 @@ while True:
     #Update looping button to currently selected sprite
     if selected_sprite == None:
         loopSpriteButton.text = "Looping: N/A"
+        keyButton.text = "N/A"
     else:
+        keyButton.text = pygame.key.name(selected_sprite.key)
         if selected_sprite.looping == -1: #-1 means is looping
             loopSpriteButton.text = "Looping: Y"
         else:
@@ -272,6 +280,19 @@ while True:
                 selected_sprite.speed = 0.5
                 selected_sprite.update_mod_sound_file()
 
+        
+            elif keyButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]) and selected_sprite != None:
+                flag=True
+                while flag:
+                    changeKeyNotif.draw()
+                    for event2 in pygame.event.get():
+                        if event2.type == pygame.KEYDOWN:
+                            selected_sprite.key  = event2.key
+                            flag = False
+                    
+                    pygame.display.flip()
+                    clock.tick(30)
+                    
             else:
                 #SUPER IMPORTANT
                 #selected sprite stores the last sprite clicked on. Nonetype if the background was clicked or selected_sprite got deleted
@@ -326,6 +347,11 @@ while True:
                 drag_sprite(event.pos[0], event.pos[1])
             if dragging_slider != None:
                 drag_slider(event.pos[0])
+
+        for sprite in sprites:
+            if pygame.key.get_pressed()[sprite.key]:
+                sprite.play()
+
 
     #If a slider is not currently being dragged, set slider levels to that of the currently selected sprite
     if selected_sprite != None and dragging_slider == None:
