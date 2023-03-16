@@ -10,6 +10,7 @@ pygame.init()
 pygame.mixer.init()
 pygame.font.init()
 game_font=pygame.font.SysFont("Times New Roman",30)
+small_font=pygame.font.SysFont("Times New Roman",15)
 clock = pygame.time.Clock()
 
 
@@ -163,7 +164,7 @@ loopSpriteButton = textBox(name="loopSprite",x=501,y=height-50,width=250,height=
 #change background button
 changeBGButton = textBox(name="changeBG", x=1, y= height-100, width= 250, height = 50, text = "Change background")
 #key button binds sprite.play to different keyboard input
-keyButton = textBox(name="changeKey", x=251, y= height-100, width= 75, height = 50, text = "g")
+keyButton = textBox(name="changeKey", x=501, y= height-100, width= 75, height = 50, text = "g")
 changeKeyNotif = textBox(name="changeKeyNotif", x=width/2-100, y= height/2-50, width= 200, height = 50, text = "Press any key")
 #Reset sprite audio button
 resetButton = textBox(name="reset", x=251, y = height-100, width = 250, height = 50, text = "Reset Sprite Audio")
