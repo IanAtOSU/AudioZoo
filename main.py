@@ -70,20 +70,13 @@ class audio_sprite():
 
         self.image = pygame.transform.scale(pygame.image.load(newName), (self.width, self.height))
 
-    def fileCheck(self):
-        gif_list = os.listdir('./Sprites') #get names of files in sprites
 
-        os.chdir(directory) #into sprites directory ***DIR
-        for i in gif_list:
-            if imghdr.what(i) == 'gif':
-                os.chdir('../')
-                return 'gif'
-            if imghdr.what(i) == 'png':
-                os.chdir('../')
-                return 'png'
-            else:
-                os.chdir('../')
-                return
+    def folderCheck(self):
+        folder = self.image_file.split('/')
+        if folder[0] == "SpriteFrames":
+            return True
+        else:
+            return False
 
 
     def stop(self):
@@ -300,8 +293,9 @@ while True:
     #DN
     #Loop through sprites and check if they are looping, if they are, dance
     for i in range(len(sprites)):
-        if sprites[i].looping == -1 and sprites[i].fileCheck == 'gif':
-            sprites[i].dance()
+        if (sprites[i].looping == -1):
+            if (sprites[i].folderCheck()):
+                sprites[i].dance()
             continue
     
     #Event loop
