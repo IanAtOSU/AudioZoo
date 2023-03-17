@@ -4,7 +4,9 @@ import pygame
 import math
 import tkinter.filedialog
 import audio_functions
-import random
+from PIL import Image
+import imghdr
+
 
 #pygame Initialization
 pygame.init()
@@ -12,6 +14,8 @@ pygame.mixer.init()
 pygame.font.init()
 game_font=pygame.font.SysFont("Times New Roman",30)
 small_font=pygame.font.SysFont("Times New Roman",15)
+clock = pygame.time.Clock()
+
 
 
 #set up screen
@@ -22,7 +26,7 @@ BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400
 
 
 class sprite():
-    def __init__(self, image_file="Sprites/sprite0.gif", sound_file="Sounds/metalgear.wav", width = 90, height = 90, initPos=(100,200)):
+    def __init__(self, image_file, sound_file, width = 90, height = 90, initPos=(100,200)):
         self.initPos = initPos
         self.width = width
         self.height = height
@@ -37,11 +41,14 @@ class sprite():
         self.volume = 0.5
         self.pitch = 0.5 
         self.speed = 0.5
+        self.frame = 0
 
         self.looping = 0 #0 = not looping; -1 = is looping
         
         self.sound = pygame.mixer.Sound(self.mod_sound_file)
         self.playing = False
+
+        self.key = pygame.key.key_code("g")
 
     def play(self):
         if not self.playing:
@@ -51,7 +58,15 @@ class sprite():
                 self.playing = True
 
     def dance(self):
-        self.image = pygame.transform.flip(self.image, True, False)
+        if self.frame == 7:
+            self.frame = 0
+        else:
+            self.frame += 1
+        temp = self.image_file.split('/')
+        temp[2] = str(self.frame) + ".png"
+        newName = temp[0] + '/' + temp[1] + '/' + temp[2]
+
+        self.image = pygame.transform.scale(pygame.image.load(newName), (self.width, self.height))
 
     def stop(self):
         if self.playing:
@@ -70,10 +85,16 @@ class sprite():
         self.rect = pygame.Rect(self.rect.x, self.rect.y, self.width, self.height)
         
     def update_mod_sound_file(self):
-        self.mod_sound_file=audio_functions.changeAll(self.orig_sound_file,self.volume,self.pitch,self.speed)
+        self.mod_sound_file = self.orig_sound_file
+        if self.volume != 0.5:
+            self.mod_sound_file = audio_functions.changeVolume(self.mod_sound_file, self.volume)
+        if self.pitch != 0.5:
+            self.mod_sound_file = audio_functions.changePitch(self.mod_sound_file, self.pitch)
+        if self.speed != 0.5:
+            self.mod_sound_file = audio_functions.changeSpeed(self.mod_sound_file, self.speed)
      
     def __del__(self):
-        print("deleted sprite with audio file: " + str(self.orig_sound_file))
+        None
 
 
 class slider():
@@ -129,12 +150,7 @@ class textBox:
 
 
 
-#sprites = [sprite("Sprites/baloon.png", "Sounds/bruh.wav"), sprite("Sprites/Cactus.png", "Sounds/emergency.wav")]
-# When adding a new sprite, call the sprite constructor without the initPos argument
-sprites = []
-sprites.append(sprite("Sprites/baloon.png", "Sounds/Meme/bruh.wav"))
-
-
+sprites = [sprite("SpriteFrames/duck/0.png", "Sounds/Drums/mixkit-drum-bass-hit-2294.wav"), sprite("SpriteFrames/theCage/0.png", "Sounds/Flute/mixkit-game-flute-bonus-2313.wav")]
 dragging_sprite = False
 dragging_slider = None
 initmousepos=[0,0]#initial position of mouse when clicking on sprite, used to calculate where the sprite should be
@@ -158,6 +174,11 @@ removeSpriteButton = textBox(name="removeSprite",x=251,y=height-50,width=250,hei
 loopSpriteButton = textBox(name="loopSprite",x=501,y=height-50,width=250,height=50,text="Looping: N")
 #change background button
 changeBGButton = textBox(name="changeBG", x=1, y= height-100, width= 250, height = 50, text = "Change background")
+#key button binds sprite.play to different keyboard input
+keyButton = textBox(name="changeKey", x=501, y= height-100, width= 75, height = 50, text = "g")
+changeKeyNotif = textBox(name="changeKeyNotif", x=width/2-100, y= height/2-50, width= 200, height = 50, text = "Press any key")
+#Reset sprite audio button
+resetButton = textBox(name="reset", x=251, y = height-100, width = 250, height = 50, text = "Reset Sprite Audio")
 
 #Create slider
 volume_slider = slider()#previously(300, 700, 600)
@@ -174,7 +195,8 @@ pitch_slider = slider(name="Pitch",y=height-45)
 speed_slider = slider(name="Speed",y=height-70)
 
 
-buttons = [addSpriteButton, removeSpriteButton, loopSpriteButton, changeBGButton,volume_label,pitch_label,speed_label]
+buttons = [addSpriteButton, removeSpriteButton, changeBGButton,
+            loopSpriteButton, volume_label,pitch_label,speed_label, resetButton, keyButton]
 sliders = [volume_slider,pitch_slider,speed_slider]
 
 
@@ -229,12 +251,46 @@ def drag_slider(mouse_x):
 
 played_already = set([])
 
+
+#getting key frames from sprites
+
+directory = './Sprites/'
+gif_list = os.listdir(directory) #get names of files in sprites
+
+os.chdir(directory) #into sprites directory ***DIR
+for i in gif_list:
+    if imghdr.what(i) == 'gif':
+        filename = i
+        temp = filename.split('.')
+        dir_check = directory + temp[0]
+        #check if directory with gif name exists
+        if os.path.exists("../SpriteFrames/" + temp[0]):
+            continue
+        else:
+            im = Image.open(i)
+            os.chdir('../SpriteFrames') #into sprite frames directory ***DIR
+            os.mkdir(temp[0]) 
+            os.chdir("../SpriteFrames/" + temp[0]) #into new gif directory ***DIR
+            for x in range(8):
+                im.seek(im.n_frames // 8 * x)
+                im.save('{}.png'.format(x)) # make 8 png files of gif
+            im.close()
+            os.chdir('../../Sprites') #back into /Sprites ***DIR
+
+#change cwd back to home directory
+os.chdir('../')
+
+
+
+
 #game loop
 while True:    
     #Update looping button to currently selected sprite
     if selected_sprite == None:
         loopSpriteButton.text = "Looping: N/A"
+        keyButton.text = "N/A"
     else:
+        keyButton.text = pygame.key.name(selected_sprite.key)
         if selected_sprite.looping == -1: #-1 means is looping
             loopSpriteButton.text = "Looping: Y"
         else:
@@ -245,6 +301,7 @@ while True:
     for i in range(len(sprites)):
         if sprites[i].looping == -1:
             sprites[i].dance()
+            continue
     
     #Event loop
     for event in pygame.event.get():
@@ -266,11 +323,30 @@ while True:
                 else:
                     selected_sprite.looping = -1
             elif changeBGButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
-                print( os.getcwd()+"\\Background\\" )
                 BG_temp = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Background\\")
                 if BG_temp != '':
                     BG = pygame.transform.scale(pygame.image.load(BG_temp), (1400,800))
+            elif resetButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+                for s in sliders:
+                    s.set_level(0.5)
+                selected_sprite.volume = 0.5
+                selected_sprite.pitch = 0.5
+                selected_sprite.speed = 0.5
+                selected_sprite.update_mod_sound_file()
 
+        
+            elif keyButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]) and selected_sprite != None:
+                flag=True
+                while flag:
+                    changeKeyNotif.draw()
+                    for event2 in pygame.event.get():
+                        if event2.type == pygame.KEYDOWN:
+                            selected_sprite.key  = event2.key
+                            flag = False
+                    
+                    pygame.display.flip()
+                    clock.tick(30)
+                    
             else:
                 #SUPER IMPORTANT
                 #selected sprite stores the last sprite clicked on. Nonetype if the background was clicked or selected_sprite got deleted
@@ -311,7 +387,7 @@ while True:
                     selected_sprite.pitch = dragging_slider.get_level()
                 elif dragging_slider.name == "Speed":
                     selected_sprite.speed = dragging_slider.get_level()
-                selected_sprite.update_mod_sound_file();
+                selected_sprite.update_mod_sound_file()
 
                 dragging_slider = None
             #if we did not click on a slider, and we did not drag our mouse since the last MOUSEBUTTONDOWN, and selected_sprite exists, play the sound
@@ -331,6 +407,11 @@ while True:
                 drag_sprite(event.pos[0], event.pos[1])
             if dragging_slider != None:
                 drag_slider(event.pos[0])
+
+        for sprite in sprites:
+            if pygame.key.get_pressed()[sprite.key]:
+                sprite.play()
+
 
     #If a slider is not currently being dragged, set slider levels to that of the currently selected sprite
     if selected_sprite != None and dragging_slider == None:
@@ -381,7 +462,6 @@ while True:
     #Draw Sliders
     for slider in sliders:
         slider.draw()
-        #print(slider.get_level())
 
     clock.tick(60)
 
