@@ -25,7 +25,7 @@ BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400
 
 
 
-class sprite():
+class audio_sprite():
     def __init__(self, image_file="Sprites/sprite0.gif", sound_file="Sounds/metalgear.wav", width = 90, height = 90, initPos=(100,200)):
 
         self.initPos = initPos
@@ -83,10 +83,6 @@ class sprite():
             self.mod_sound_file = audio_functions.changePitch(self.mod_sound_file, hash((self.mod_sound_file, self.image_file, self.initPos)), self.pitch)
         if self.speed != 0.5:
             self.mod_sound_file = audio_functions.changeSpeed(self.mod_sound_file, hash((self.mod_sound_file, self.image_file, self.initPos)), self.speed)
-    
-    def __hash__(self) -> int:
-        return hash((self.orig_sound_file, self.image_file, self.initPos))
-        pass
 
     def __del__(self):
         None
@@ -146,7 +142,7 @@ class textBox:
 
 
 
-sprites = [sprite("SpriteFrames/duck/0.png", "Sounds/Drums/mixkit-drum-bass-hit-2294.wav"), sprite("SpriteFrames/theCage/0.png", "Sounds/Flute/mixkit-game-flute-bonus-2313.wav")]
+sprites = [audio_sprite("SpriteFrames/duck/0.png", "Sounds/Drums/mixkit-drum-bass-hit-2294.wav"), audio_sprite("SpriteFrames/theCage/0.png", "Sounds/Flute/mixkit-game-flute-bonus-2313.wav")]
 
 dragging_sprite = False
 dragging_slider = None
@@ -305,7 +301,7 @@ while True:
                 image = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sprites\\")
                 sound = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sounds\\")
                 if image != '' and sound != '':
-                    sprites.append(sprite(image_file=image, sound_file=sound))
+                    sprites.append(audio_sprite(image_file=image, sound_file=sound))
             elif loopSpriteButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
                 if selected_sprite.looping == -1:
                     selected_sprite.stop()
