@@ -7,6 +7,7 @@ import audio_functions
 from PIL import Image
 import imghdr
 
+
 #pygame Initialization
 pygame.init()
 pygame.mixer.init()
@@ -29,7 +30,7 @@ class sprite():
         self.initPos = initPos
         self.width = width
         self.height = height
-        
+
         self.image_file = image_file
         self.image = pygame.transform.scale(pygame.image.load(self.image_file), (self.width, self.height))
         self.rect = self.image.get_rect()
@@ -42,9 +43,8 @@ class sprite():
         self.speed = 0.5
         self.frame = 0
 
-
         self.looping = 0 #0 = not looping; -1 = is looping
-        # RC: Added Code
+        
         self.sound = pygame.mixer.Sound(self.mod_sound_file)
         self.playing = False
 
@@ -180,6 +180,10 @@ changeKeyNotif = textBox(name="changeKeyNotif", x=width/2-100, y= height/2-50, w
 #Reset sprite audio button
 resetButton = textBox(name="reset", x=251, y = height-100, width = 250, height = 50, text = "Reset Sprite Audio")
 
+#Create slider
+volume_slider = slider()#previously(300, 700, 600)
+#size_slider = slider()
+#size_slider = slider(minX=width-450, maxX=width-50, y=height-43, color=(115,105,215), slidercolor=[0,200,50])
 #Slider labels
 volume_label = textBox(x=width-500,y=height-30,width=50,height=20,text="Volume",font=small_font)
 pitch_label = textBox(x=width-500,y=height-55,width=50,height=20,text="Pitch",font=small_font)
@@ -227,6 +231,10 @@ def check_drag_slider():
             sliders.remove(tmp)
             sliders.append(tmp)
             break #only interact with the first sprite found
+
+        # check if the size slider was clicked
+        #elif size_slider.rect.collidepoint(pygame.mouse.get_pos()):
+            #selected_slider = size_slider
     return tmp
 
 def drag_sprite(mouse_x, mouse_y):
@@ -306,7 +314,8 @@ while True:
                 image = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sprites\\")
                 sound = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sounds\\")
                 if image != '' and sound != '':
-                    sprites.append(sprite(image, sound))
+                    #sprites.append(sprite(image, sound))
+                    sprites.append(sprite(image, sound,))
             elif loopSpriteButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
                 if selected_sprite.looping == -1:
                     selected_sprite.stop()
@@ -366,6 +375,12 @@ while True:
             #If we dragged a slider
             if dragging_slider != None:
                 # set the selected_sprite's attributes to the dragged slider's position
+                if dragging_slider == volume_slider:
+                    selected_sprite.change_volume()
+                #elif dragging_slider == size_slider:
+                    #selected_sprite.change_size()
+                    # set the dragging_slider to None to indicate that we are no longer dragging a slider
+                    #dragging_slider = None
                 if dragging_slider.name == "Volume":
                     selected_sprite.volume = dragging_slider.get_level()
                 elif dragging_slider.name == "Pitch":
