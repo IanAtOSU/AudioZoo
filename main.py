@@ -23,13 +23,10 @@ BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400
 
 class sprite():
     def __init__(self, image_file="Sprites/sprite0.gif", sound_file="Sounds/metalgear.wav", width = 90, height = 90, initPos=(100,200)):
-        #self.initPos = initPos
+        self.initPos = initPos
         self.width = width
         self.height = height
 
-        # Modify the initPos argument to be a random position on the screen
-        self.initPos = (random.randint(0, width - self.width), random.randint(0, height - self.height))
-        
         self.image_file = image_file
         self.image = pygame.transform.scale(pygame.image.load(self.image_file), (self.width, self.height))
         self.rect = self.image.get_rect()
@@ -41,10 +38,8 @@ class sprite():
         self.pitch = 0.5 
         self.speed = 0.5
 
-
         self.looping = 0 #0 = not looping; -1 = is looping
         
-        # RC: Added Code
         self.sound = pygame.mixer.Sound(self.mod_sound_file)
         self.playing = False
 
@@ -134,9 +129,10 @@ class textBox:
 
 
 
-sprites = [sprite("Sprites/baloon.png", "Sounds/bruh.wav"), sprite("Sprites/Cactus.png", "Sounds/emergency.wav")]
+#sprites = [sprite("Sprites/baloon.png", "Sounds/bruh.wav"), sprite("Sprites/Cactus.png", "Sounds/emergency.wav")]
 # When adding a new sprite, call the sprite constructor without the initPos argument
-sprites.append(sprite("Sprites/baloon.png", "Sounds/bruh.wav"))
+sprites = []
+sprites.append(sprite("Sprites/baloon.png", "Sounds/Meme/bruh.wav"))
 
 
 dragging_sprite = False
@@ -261,7 +257,8 @@ while True:
                 image = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sprites\\")
                 sound = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sounds\\")
                 if image != '' and sound != '':
-                    sprites.append(sprite(image, sound))
+                    #sprites.append(sprite(image, sound))
+                    sprites.append(sprite(image, sound,))
             elif loopSpriteButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
                 if selected_sprite.looping == -1:
                     selected_sprite.stop()
