@@ -24,7 +24,6 @@ screen = pygame.display.set_mode(size)
 BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400,800))
 
 
-
 class audio_sprite():
     def __init__(self, image_file="Sprites/sprite0.gif", sound_file="Sounds/metalgear.wav", width = 90, height = 90, initPos=(100,200)):
 
@@ -184,10 +183,12 @@ loopSpriteButton = textBox(name="loopSprite",x=501,y=height-50,width=250,height=
 #change background button
 changeBGButton = textBox(name="changeBG", x=1, y= height-100, width= 250, height = 50, text = "Change background")
 #key button binds sprite.play to different keyboard input
-keyButton = textBox(name="changeKey", x=501, y= height-100, width= 75, height = 50, text = "g")
+keyButton = textBox(name="changeKey", x=751, y= height-50, width= 75, height = 50, text = "g")
 changeKeyNotif = textBox(name="changeKeyNotif", x=width/2-100, y= height/2-50, width= 200, height = 50, text = "Press any key")
 #Reset sprite audio button
 resetButton = textBox(name="reset", x=251, y = height-100, width = 250, height = 50, text = "Reset Sprite Audio")
+#Copy/Paste button
+duplicateButton = textBox(name="copyPaste", x=501, y = height-100, width = 250, height = 50, text = "Duplicate")
 
 #Slider labels
 volume_label = textBox(x=width-500,y=height-30,width=50,height=20,text="Volume",font=small_font)
@@ -201,7 +202,8 @@ speed_slider = slider(name="Speed",y=height-70)
 
 
 buttons = [addSpriteButton, removeSpriteButton, changeBGButton,
-            loopSpriteButton, volume_label,pitch_label,speed_label, resetButton, keyButton]
+            loopSpriteButton, volume_label,pitch_label,speed_label,
+              resetButton, keyButton, duplicateButton]
 sliders = [volume_slider,pitch_slider,speed_slider]
 
 
@@ -281,16 +283,15 @@ for i in gif_list:
 #change cwd back to home directory
 os.chdir('../')
 
-
-
-
 #game loop
 while True:    
     #Update looping button to currently selected sprite
     if selected_sprite == None:
         loopSpriteButton.text = "Looping: N/A"
+        duplicateButton.text = "N/A"
         keyButton.text = "N/A"
     else:
+        duplicateButton.text = "Duplicate"
         keyButton.text = pygame.key.name(selected_sprite.key)
         if selected_sprite.looping == -1: #-1 means is looping
             loopSpriteButton.text = "Looping: Y"
@@ -329,6 +330,30 @@ while True:
                 BG_temp = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Background\\")
                 if BG_temp != '':
                     BG = pygame.transform.scale(pygame.image.load(BG_temp), (1400,800))
+            elif duplicateButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
+                if selected_sprite != None:
+                    image = selected_sprite.image_file
+                    sound = selected_sprite.orig_sound_file
+                    if image != '' and sound != '':
+                        new_sprite = audio_sprite(image_file=image, sound_file=sound)
+                        sprites.append(new_sprite)
+                    new_sprite.initPos = selected_sprite.initPos
+                    new_sprite.width = selected_sprite.width
+                    new_sprite.height = selected_sprite.height
+                    
+                    new_sprite.image_file = selected_sprite.image_file
+                    new_sprite.rect = selected_sprite.image.get_rect()
+
+                    new_sprite.orig_sound_file = selected_sprite.orig_sound_file
+                    new_sprite.mod_sound_file = selected_sprite.orig_sound_file
+
+                    new_sprite.volume = selected_sprite.volume
+                    new_sprite.pitch = selected_sprite.pitch 
+                    new_sprite.speed = selected_sprite.speed
+                    new_sprite.frame = selected_sprite.frame
+                    new_sprite.update_mod_sound_file()
+
+                    
             elif resetButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
                 for s in sliders:
                     s.set_level(0.5)
