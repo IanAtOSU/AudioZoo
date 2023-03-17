@@ -6,6 +6,7 @@ import os
 '''
 Notes:
     - All functions take a range from 0-1 as their multiplier input
+    - All functions take an input "outputnumber" which is put in the output file name to distinguish it from other modfiles from the same base audio file
 '''
 
 def filenamefrompath(name):
@@ -18,13 +19,13 @@ def filenamefrompath(name):
     return result
 
 #Changes the audio file's volume
-def changeVolume(audio_path, multiplier):
+def changeVolume(audio_path, multiplier, outputnumber):
     multiplier = multiplier*2 #Range from 0 to 2
 
     audioIn = wave.open(audio_path, 'rb')
     p = audioIn.getparams()
 
-    outpath = "Sounds/VolOut_" + audio_path[audio_path.rfind("/")+1:]
+    outpath = "Sounds/VolOut_" + str(outputnumber) + "_" + audio_path[audio_path.rfind("/")+1:]
 
     audioOut = wave.open(outpath, 'wb')
     audioOut.setparams(p)
@@ -33,13 +34,13 @@ def changeVolume(audio_path, multiplier):
     return outpath
 
 #Pitches the audio file up or down
-def changePitch(audio_path, multiplier):
+def changePitch(audio_path, multiplier, outputnumber):
     Hz_shift = (multiplier-0.5)*1200 #range of change from -600 to +600 Hertz
     audioIn = wave.open(audio_path, 'r')
     p = list(audioIn.getparams())
     p[3] = 0 #(Number of samples will be set by writeframes)
 
-    outpath = "Sounds/PitchOut_" + audio_path[audio_path.rfind("/")+1:]
+    outpath = "Sounds/PitchOut_" + str(outputnumber) + "_" + audio_path[audio_path.rfind("/")+1:]
 
     audioOut = wave.open(outpath, 'w')
     audioOut.setparams(tuple(p))
@@ -74,13 +75,13 @@ def changePitch(audio_path, multiplier):
     audioOut.close() 
     return outpath
 
-def changeSpeed(audio_path, multiplier):
+def changeSpeed(audio_path, multiplier, outputnumber):
     multiplier = pow(multiplier,2)*3+0.25 #range from 0.25x to 3.25x
     audioIn = wave.open(audio_path, 'rb')
     rate = audioIn.getframerate()
     frames = audioIn.readframes(-1)
 
-    outpath = "Sounds/SpeedOut_" + audio_path[audio_path.rfind("/")+1:]
+    outpath = "Sounds/SpeedOut_" + str(outputnumber) + "_" + audio_path[audio_path.rfind("/")+1:]
 
     audioOut = wave.open(outpath, 'wb')
 

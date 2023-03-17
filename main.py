@@ -19,9 +19,10 @@ size = width, height = 1400, 800
 screen = pygame.display.set_mode(size)
 BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400,800))
 
+global_outputnumber=0
 
 class sprite():
-    def __init__(self, image_file="Sprites/sprite0.gif", sound_file="Sounds/metalgear.wav", width = 90, height = 90, initPos=(100,200)):
+    def __init__(self, image_file="Sprites/sprite0.gif", sound_file="Sounds/metalgear.wav", width = 90, height = 90, initPos=(0,0)):
         self.initPos = initPos
         self.width = width
         self.height = height
@@ -30,6 +31,9 @@ class sprite():
         self.image = pygame.transform.scale(pygame.image.load(self.image_file), (self.width, self.height))
         self.rect = self.image.get_rect()
 
+        self.rect[0]=self.initPos[0]
+        self.rect[1]=self.initPos[1]
+
         self.orig_sound_file = sound_file
         self.mod_sound_file = sound_file
 
@@ -37,11 +41,21 @@ class sprite():
         self.pitch = 0.5 
         self.speed = 0.5
 
-
+        global global_outputnumber
+        self.outputnumber=global_outputnumber#number for the mod sound file name
+        global_outputnumber+=1
+        
         self.looping = 0 #0 = not looping; -1 = is looping
         # RC: Added Code
         self.sound = pygame.mixer.Sound(self.mod_sound_file)
         self.playing = False
+    def copy(self):#deep copy self to given position
+        result=sprite(self.image_file,self.orig_sound_file,self.width,self.height)
+        result.volume=self.volume
+        result.pitch=self.pitch
+        result.speed=self.speed
+        result.update_mod_sound_file()
+        return result
 
     def play(self):
         if not self.playing:
@@ -72,14 +86,14 @@ class sprite():
     def update_mod_sound_file(self):
         self.mod_sound_file = self.orig_sound_file
         if self.volume != 0.5:
-            self.mod_sound_file = audio_functions.changeVolume(self.mod_sound_file, self.volume)
+            self.mod_sound_file = audio_functions.changeVolume(self.mod_sound_file, self.volume, self.outputnumber)
         if self.pitch != 0.5:
-            self.mod_sound_file = audio_functions.changePitch(self.mod_sound_file, self.pitch)
+            self.mod_sound_file = audio_functions.changePitch(self.mod_sound_file, self.pitch, self.outputnumber)
         if self.speed != 0.5:
-            self.mod_sound_file = audio_functions.changeSpeed(self.mod_sound_file, self.speed)
+            self.mod_sound_file = audio_functions.changeSpeed(self.mod_sound_file, self.speed, self.outputnumber)
      
     def __del__(self):
-        None
+        os.remove(self.mod_sound_file)
 
 
 class slider():
@@ -179,7 +193,7 @@ sliders = [volume_slider,pitch_slider,speed_slider]
 
 
 selected_sprite = sprites[0]
-
+clipboard_sprite=None #ctrl-c will move a deep copy of the selected sprite into clipboard_sprite
 
 #loops through sprites, if a sprite is clicked on we return that sprite and set initspritepos and initmousepos apprpriately
 def check_drag_sprite(): 
@@ -225,6 +239,10 @@ def drag_slider(mouse_x):
 
 played_already = set([])
 
+selected_position=[int(width/2),int(height/2)]#paste sprite will go to selected position, marked with red dot, but only if no sprite is selected.
+lctrl_held=False;
+rctrl_held=False;
+
 #game loop
 while True:    
     #Update looping button to currently selected sprite
@@ -245,8 +263,10 @@ while True:
     #Event loop
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
-        elif event.type == pygame.MOUSEBUTTONDOWN: 
-
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            #update selected position for paste
+            selected_position=[pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]]
+            
             #Button click checks need to be first so they don't set selected_sprite to None
             #If add-a-sprite button is clicked
             if addSpriteButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
@@ -327,6 +347,25 @@ while True:
             if dragging_slider != None:
                 drag_slider(event.pos[0])
 
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LCTRL:
+                lctrl_held=True;
+            elif event.key == pygame.K_RCTRL:
+                rctrl_held=True;
+            elif event.key == pygame.K_c and (lctrl_held or rctrl_held) and selected_sprite!=None:#copy sprite
+                clipboard_sprite=selected_sprite.copy();
+            elif event.key == pygame.K_v and (lctrl_held or rctrl_held) and selected_sprite==None and clipboard_sprite!=None:#paste sprite
+                clipboard_sprite.rect[0]=selected_position[0]-int(clipboard_sprite.width/2);
+                clipboard_sprite.rect[1]=selected_position[1]-int(clipboard_sprite.width/2);
+                sprites.append(clipboard_sprite);
+                selected_sprite=sprites[len(sprites)-1];
+                clipboard_sprite=None;#to prevent user from doing shallow copy
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_LCTRL:
+                lctrl_held=False;
+            elif event.key == pygame.K_RCTRL:
+                rctrl_held=False;
+
     #If a slider is not currently being dragged, set slider levels to that of the currently selected sprite
     if selected_sprite != None and dragging_slider == None:
         for i in sliders:
@@ -368,7 +407,8 @@ while True:
     #Draw selected sprite border
     if selected_sprite!=None:
         pygame.draw.rect(screen,(255,0,0),selected_sprite.rect,1,)
-    
+    else:#draw red dot at selected position if no sprite is selected
+        pygame.draw.circle(screen,(255,0,0),selected_position,5)
     #Draw Buttons
     for button in buttons:
         button.draw()
