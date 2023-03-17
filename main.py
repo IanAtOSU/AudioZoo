@@ -25,7 +25,7 @@ BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400
 
 
 class sprite():
-    def __init__(self, image_file="Sprites/sprite0.gif", sound_file="Sounds/metalgear.wav", width = 90, height = 90, initPos=(100,200)):
+    def __init__(self, image_file, sound_file, width = 90, height = 90, initPos=(100,200)):
         self.initPos = initPos
         self.width = width
         self.height = height
@@ -150,7 +150,7 @@ class textBox:
 
 
 
-sprites = [sprite("SpriteFrames/duck/0.png", "Sounds/bruh.wav"), sprite("SpriteFrames/theCage/0.png", "Sounds/vine-boom.wav")]
+sprites = [sprite("SpriteFrames/duck/0.png", "Sounds/Drums/mixkit-drum-bass-hit-2294.wav"), sprite("SpriteFrames/theCage/0.png", "Sounds/Flute/mixkit-game-flute-bonus-2313.wav")]
 dragging_sprite = False
 dragging_slider = None
 initmousepos=[0,0]#initial position of mouse when clicking on sprite, used to calculate where the sprite should be
