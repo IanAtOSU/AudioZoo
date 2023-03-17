@@ -4,6 +4,8 @@ import pygame
 import math
 import tkinter.filedialog
 import audio_functions
+from PIL import Image
+import imghdr
 
 #pygame Initialization
 pygame.init()
@@ -22,8 +24,10 @@ screen = pygame.display.set_mode(size)
 BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400,800))
 
 
-class audio_sprite():
+
+class sprite():
     def __init__(self, image_file="Sprites/sprite0.gif", sound_file="Sounds/metalgear.wav", width = 90, height = 90, initPos=(100,200)):
+
         self.initPos = initPos
         self.width = width
         self.height = height
@@ -38,6 +42,7 @@ class audio_sprite():
         self.volume = 0.5
         self.pitch = 0.5 
         self.speed = 0.5
+        self.frame = 0
 
 
         self.looping = 0 #0 = not looping; -1 = is looping
@@ -55,7 +60,15 @@ class audio_sprite():
                 self.playing = True
 
     def dance(self):
-        self.image = pygame.transform.flip(self.image, True, False)
+        if self.frame == 7:
+            self.frame = 0
+        else:
+            self.frame += 1
+        temp = self.image_file.split('/')
+        temp[2] = str(self.frame) + ".png"
+        newName = temp[0] + '/' + temp[1] + '/' + temp[2]
+
+        self.image = pygame.transform.scale(pygame.image.load(newName), (self.width, self.height))
 
     def stop(self):
         if self.playing:
@@ -132,7 +145,9 @@ class textBox:
 
 
 
-sprites = [audio_sprite("Sprites/baloon.png", "Sounds/bruh.wav"), audio_sprite("Sprites/Cactus.png", "Sounds/emergency.wav")]
+
+sprites = [sprite("SpriteFrames/duck/0.png", "Sounds/Drums/mixkit-drum-bass-hit-2294.wav"), sprite("SpriteFrames/theCage/0.png", "Sounds/Flute/mixkit-game-flute-bonus-2313.wav")]
+
 dragging_sprite = False
 dragging_slider = None
 initmousepos=[0,0]#initial position of mouse when clicking on sprite, used to calculate where the sprite should be
@@ -225,6 +240,38 @@ def drag_slider(mouse_x):
 
 played_already = set([])
 
+
+#getting key frames from sprites
+
+directory = './Sprites/'
+gif_list = os.listdir(directory) #get names of files in sprites
+
+os.chdir(directory) #into sprites directory ***DIR
+for i in gif_list:
+    if imghdr.what(i) == 'gif':
+        filename = i
+        temp = filename.split('.')
+        dir_check = directory + temp[0]
+        #check if directory with gif name exists
+        if os.path.exists("../SpriteFrames/" + temp[0]):
+            continue
+        else:
+            im = Image.open(i)
+            os.chdir('../SpriteFrames') #into sprite frames directory ***DIR
+            os.mkdir(temp[0]) 
+            os.chdir("../SpriteFrames/" + temp[0]) #into new gif directory ***DIR
+            for x in range(8):
+                im.seek(im.n_frames // 8 * x)
+                im.save('{}.png'.format(x)) # make 8 png files of gif
+            im.close()
+            os.chdir('../../Sprites') #back into /Sprites ***DIR
+
+#change cwd back to home directory
+os.chdir('../')
+
+
+
+
 #game loop
 while True:    
     #Update looping button to currently selected sprite
@@ -243,6 +290,7 @@ while True:
     for i in range(len(sprites)):
         if sprites[i].looping == -1:
             sprites[i].dance()
+            continue
     
     #Event loop
     for event in pygame.event.get():
@@ -257,7 +305,7 @@ while True:
                 image = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sprites\\")
                 sound = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sounds\\")
                 if image != '' and sound != '':
-                    sprites.append(audio_sprite(image_file=image, sound_file=sound))
+                    sprites.append(sprite(image_file=image, sound_file=sound))
             elif loopSpriteButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
                 if selected_sprite.looping == -1:
                     selected_sprite.stop()
