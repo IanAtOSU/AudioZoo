@@ -324,12 +324,13 @@ while True:
                 if BG_temp != '':
                     BG = pygame.transform.scale(pygame.image.load(BG_temp), (1400,800))
             elif resetButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]):
-                for s in sliders:
-                    s.set_level(0.5)
-                selected_sprite.volume = 0.5
-                selected_sprite.pitch = 0.5
-                selected_sprite.speed = 0.5
-                selected_sprite.update_mod_sound_file()
+                if selected_sprite != None:
+                    for s in sliders:
+                        s.set_level(0.5)
+                    selected_sprite.volume = 0.5
+                    selected_sprite.pitch = 0.5
+                    selected_sprite.speed = 0.5
+                    selected_sprite.update_mod_sound_file()
 
         
             elif keyButton.within(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]) and selected_sprite != None:
