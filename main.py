@@ -87,11 +87,11 @@ class audio_sprite():
     def update_mod_sound_file(self):
         self.mod_sound_file = self.orig_sound_file
         if self.volume != 0.5:
-            self.mod_sound_file = audio_functions.changeVolume(self.mod_sound_file, hash((self.mod_sound_file, self.image_file, self.initPos)),  self.volume)
+            self.mod_sound_file = audio_functions.changeVolume(self.mod_sound_file, id(self),  self.volume)
         if self.pitch != 0.5:
-            self.mod_sound_file = audio_functions.changePitch(self.mod_sound_file, hash((self.mod_sound_file, self.image_file, self.initPos)), self.pitch)
+            self.mod_sound_file = audio_functions.changePitch(self.mod_sound_file, id(self), self.pitch)
         if self.speed != 0.5:
-            self.mod_sound_file = audio_functions.changeSpeed(self.mod_sound_file, hash((self.mod_sound_file, self.image_file, self.initPos)), self.speed)
+            self.mod_sound_file = audio_functions.changeSpeed(self.mod_sound_file, id(self), self.speed)
 
     def __del__(self):
         None
