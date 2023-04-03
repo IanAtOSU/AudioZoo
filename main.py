@@ -3,9 +3,12 @@ import os
 import pygame
 import math
 import tkinter.filedialog
-import audio_functions
 from PIL import Image
 import imghdr
+
+#Our Files
+import audio_functions
+from classes import audio_sprite, slider, textBox
 
 #pygame Initialization
 pygame.init()
@@ -15,140 +18,11 @@ game_font=pygame.font.SysFont("Times New Roman",30)
 small_font=pygame.font.SysFont("Times New Roman",15)
 clock = pygame.time.Clock()
 
-
-
 #set up screen
 clock = pygame.time.Clock()
 size = width, height = 1400, 800
 screen = pygame.display.set_mode(size)
 BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400,800))
-
-
-
-class audio_sprite():
-    def __init__(self, image_file="Sprites/sprite0.gif", sound_file="Sounds/metalgear.wav", width = 90, height = 90, initPos=(100,200)):
-
-        self.initPos = initPos
-        self.width = width
-        self.height = height
-        
-        self.image_file = image_file
-        self.image = pygame.transform.scale(pygame.image.load(self.image_file), (self.width, self.height))
-        self.rect = self.image.get_rect()
-
-        self.orig_sound_file = sound_file
-        self.mod_sound_file = sound_file
-
-        self.volume = 0.5
-        self.pitch = 0.5 
-        self.speed = 0.5
-        self.frame = 0
-
-
-        self.looping = 0 #0 = not looping; -1 = is looping
-        # RC: Added Code
-        self.sound = pygame.mixer.Sound(self.mod_sound_file)
-        self.playing = False
-
-        self.key = pygame.key.key_code("g")
-
-    def play(self):
-        if not self.playing:
-            self.sound = pygame.mixer.Sound(self.mod_sound_file)
-            self.sound.play(loops=self.looping) 
-            if self.looping == -1:
-                self.playing = True
-
-    def dance(self):
-        if self.frame == 7:
-            self.frame = 0
-        else:
-            self.frame += 1
-        temp = self.image_file.split('/')
-        temp[2] = str(self.frame) + ".png"
-        newName = temp[0] + '/' + temp[1] + '/' + temp[2]
-
-        self.image = pygame.transform.scale(pygame.image.load(newName), (self.width, self.height))
-
-
-    def folderCheck(self):
-        folder = self.image_file.split('/')
-        if folder[0] == "SpriteFrames":
-            return True
-        else:
-            return False
-
-
-    def stop(self):
-        if self.playing:
-            self.sound.stop()
-            self.playing = False
-        
-    def update_mod_sound_file(self):
-        self.mod_sound_file = self.orig_sound_file
-        if self.volume != 0.5:
-            self.mod_sound_file = audio_functions.changeVolume(self.mod_sound_file, id(self),  self.volume)
-        if self.pitch != 0.5:
-            self.mod_sound_file = audio_functions.changePitch(self.mod_sound_file, id(self), self.pitch)
-        if self.speed != 0.5:
-            self.mod_sound_file = audio_functions.changeSpeed(self.mod_sound_file, id(self), self.speed)
-
-    def __del__(self):
-        None
-
-
-class slider():
-    def __init__(self, name="", minX=width-450, maxX=width-50, y=height-20,color=(115,105,215),slidercolor=[0,200,50]):
-        if minX > maxX or minX < 0 or maxX > 900:
-            ValueError
-        self.name=name
-        self.y = y
-        self.minX = minX
-        self.maxX = maxX
-        self.x = minX + (maxX - minX) / 2
-        self.color=color
-        self.slidercolor=slidercolor
-
-    def get_level(self):
-        #return (self.x - self.minX) / ((self.maxX-self.minX )/ self.levels[1]) + self.levels[0]
-        return (self.x - self.minX) / ((self.maxX-self.minX ))
-
-    def set_level(self, val):
-        if val > 1 or val < 0:
-            ValueError
-        self.x = (val * (self.maxX - self.minX)) + self.minX
-
-    def draw(self):
-        pygame.draw.rect(screen, "Black", (self.minX-2, self.y-12, self.maxX - self.minX+4, 24) )
-        pygame.draw.rect(screen, self.color, (self.minX, self.y-10, self.maxX - self.minX, 20) )
-        pygame.draw.rect(screen, "Black", (self.minX+10, self.y-1, self.maxX - self.minX -20 , 1) )
-        self.rect = pygame.draw.circle(screen, "Black", (self.x, self.y), 10)
-        pygame.draw.circle(screen, self.slidercolor, (self.x, self.y), 9)
-
-
-class textBox:
-    def __init__(self,name="",x=0,y=0,width=100,height=20,background=(115,105,215),border=(0,0,0),textcolor=(0,0,0),text="",font=game_font):
-        self.name=name
-        self.x=x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.background=background
-        self.border=border
-        self.textcolor=textcolor
-        self.text=text
-        self.font=font
-    def draw(self):
-        self.rect = pygame.draw.rect(screen,self.background,(self.x,self.y,self.width,self.height))
-        pygame.draw.rect(screen,self.border,(self.x,self.y,self.width,self.height),width=1)
-        text_surface=self.font.render(self.text,False,self.textcolor)
-        text_rect=text_surface.get_rect(center=(self.x+self.width/2,self.y+self.height/2))
-        screen.blit(text_surface,text_rect)
-
-    def within(self,x,y):
-        return x>=self.x and x<=self.x+self.width and y>=self.y and y<=self.y+self.height
-
-
 
 
 sprites = [audio_sprite("SpriteFrames/duck/0.png", "Sounds/Drums/mixkit-drum-bass-hit-2294.wav"), audio_sprite("SpriteFrames/theCage/0.png", "Sounds/Flute/mixkit-game-flute-bonus-2313.wav")]
@@ -169,28 +43,28 @@ measure_stick = pygame.Rect(100, 4, 6, 160)
 #loopSpriteButton = textBox(500,height-50,250,50,text="Looping: Y")
 
 #Create textbox for adding sprites
-addSpriteButton = textBox(name="addSprite",x=1,y=height-50,width=250,height=50,text="Add a sprite")
+addSpriteButton = textBox(name="addSprite", font = game_font, screen = screen, x=1,y=height-50,width=250,height=50,text="Add a sprite")
 #Remove a Sprite button
-removeSpriteButton = textBox(name="removeSprite",x=251,y=height-50,width=250,height=50,text="Remove a sprite")
+removeSpriteButton = textBox(name="removeSprite", font = game_font, screen = screen, x=251,y=height-50,width=250,height=50,text="Remove a sprite")
 #Sprite looping button
-loopSpriteButton = textBox(name="loopSprite",x=501,y=height-50,width=250,height=50,text="Looping: N")
+loopSpriteButton = textBox(name="loopSprite", font = game_font, screen = screen, x=501,y=height-50,width=250,height=50,text="Looping: N")
 #change background button
-changeBGButton = textBox(name="changeBG", x=1, y= height-100, width= 250, height = 50, text = "Change background")
+changeBGButton = textBox(name="changeBG", font = game_font, screen = screen, x=1, y= height-100, width= 250, height = 50, text = "Change background")
 #key button binds sprite.play to different keyboard input
-keyButton = textBox(name="changeKey", x=501, y= height-100, width= 75, height = 50, text = "g")
-changeKeyNotif = textBox(name="changeKeyNotif", x=width/2-100, y= height/2-50, width= 200, height = 50, text = "Press any key")
+keyButton = textBox(name="changeKey", font = game_font, screen = screen, x=501, y= height-100, width= 75, height = 50, text = "g")
+changeKeyNotif = textBox(name="changeKeyNotif", font = game_font, screen = screen, x=width/2-100, y= height/2-50, width= 200, height = 50, text = "Press any key")
 #Reset sprite audio button
-resetButton = textBox(name="reset", x=251, y = height-100, width = 250, height = 50, text = "Reset Sprite Audio")
+resetButton = textBox(name="reset", font = game_font,screen = screen, x=251, y = height-100, width = 250, height = 50, text = "Reset Sprite Audio")
 
 #Slider labels
-volume_label = textBox(x=width-500,y=height-30,width=50,height=20,text="Volume",font=small_font)
-pitch_label = textBox(x=width-500,y=height-55,width=50,height=20,text="Pitch",font=small_font)
-speed_label = textBox(x=width-500,y=height-80,width=50,height=20,text="Speed",font=small_font)
+volume_label = textBox(name="vol_lab", font = small_font,screen = screen, x=width-500,y=height-30,width=50,height=20,text="Volume")
+pitch_label = textBox(name="pit_lab", font = small_font, screen = screen, x=width-500,y=height-55,width=50,height=20,text="Pitch")
+speed_label = textBox(name="sped_lab", font = small_font, screen = screen, x=width-500,y=height-80,width=50,height=20,text="Speed")
 
 #Create sliders
-volume_slider = slider(name="Volume",y=height-20)#previously(300, 700, 600)
-pitch_slider = slider(name="Pitch",y=height-45)
-speed_slider = slider(name="Speed",y=height-70)
+volume_slider = slider(screen, name="Volume",y=height-20)#previously(300, 700, 600)
+pitch_slider = slider(screen, name="Pitch",y=height-45)
+speed_slider = slider(screen, name="Speed",y=height-70)
 
 
 buttons = [addSpriteButton, removeSpriteButton, changeBGButton,
@@ -273,8 +147,6 @@ for i in gif_list:
 
 #change cwd back to home directory
 os.chdir('../')
-
-
 
 
 #game loop
