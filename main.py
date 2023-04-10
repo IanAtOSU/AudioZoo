@@ -238,6 +238,37 @@ def drag_slider(mouse_x):
         sliders[len(sliders)-1].x = initsliderpos[0]+mouse_x-initmousepos[0]
 
 played_already = set([])
+<<<<<<< Updated upstream
+=======
+bar_moving=True
+measure_stick = pygame.Rect(100, 4, 6, 160)
+
+#sprite dancing setup (Make GIFs a directory of PNGs)
+directory = './Sprites/'
+gif_list = os.listdir(directory) #get names of files in sprites
+os.chdir(directory) #into sprites directory ***DIR
+for i in gif_list:
+    if imghdr.what(i) == 'gif':
+        filename = i
+        temp = filename.split('.')
+        dir_check = directory + temp[0]
+        #check if directory with gif name exists
+        if os.path.exists("../SpriteFrames/" + temp[0]):
+            continue
+        else:
+            im = Image.open(i)
+            os.chdir('../SpriteFrames') #into sprite frames directory ***DIR
+            os.mkdir(temp[0]) 
+            os.chdir("../SpriteFrames/" + temp[0]) #into new gif directory ***DIR
+            for x in range(8):
+                im.seek(im.n_frames // 8 * x)
+                im.save('{}.png'.format(x)) # make 8 png files of gif
+            im.close()
+            os.chdir('../../Sprites') #back into /Sprites ***DIR
+
+#change cwd back to home directory
+os.chdir('../')
+>>>>>>> Stashed changes
 
 selected_position=[int(width/2),int(height/2)]#paste sprite will go to selected position, marked with red dot, but only if no sprite is selected.
 lctrl_held=False;
@@ -346,6 +377,9 @@ while True:
                 drag_sprite(event.pos[0], event.pos[1])
             if dragging_slider != None:
                 drag_slider(event.pos[0])
+        elif event.type == pygame.KEYDOWN:
+            if event.key==pygame.K_SPACE:
+                bar_moving=not bar_moving
 
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LCTRL:
@@ -385,7 +419,9 @@ while True:
     screen.blit(BG, (0,0))
 
     pygame.draw.rect(screen, "Red", measure_stick)
-    if measure_stick.x < width-20:
+    if not bar_moving:
+        pass
+    elif measure_stick.x < width-20:
         measure_stick.x = measure_stick.x + 2
     else:
         measure_stick.x = 100
@@ -399,7 +435,7 @@ while True:
 
     #Draw Sprites
     for i in range(len(sprites)):
-        if (sprites[i].rect.colliderect(measure_stick) and sprites[i] not in played_already):
+        if (bar_moving and sprites[i].rect.colliderect(measure_stick) and sprites[i] not in played_already and not (dragging_sprite and selected_sprite==sprites[i])):
             sprites[i].play()
             played_already.add(sprites[i])
         screen.blit(sprites[i].image, sprites[i].rect)
