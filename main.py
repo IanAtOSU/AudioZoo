@@ -45,11 +45,12 @@ loopSpriteButton = textBox(name="loopSprite", font = game_font, screen = screen,
 #change background button
 changeBGButton = textBox(name="changeBG", font = game_font, screen = screen, x=1, y= height-100, width= 250, height = 50, text = "Change background")
 #key button binds sprite.play to different keyboard input
-
-keyButton = textBox(name="changeKey", font = game_font, screen = screen, x=501, y= height-100, width= 75, height = 50, text = "g")
+keyButton = textBox(name="changeKey", font = game_font, screen = screen, x=751, y= height-50, width= 75, height = 50, text = "g")
 changeKeyNotif = textBox(name="changeKeyNotif", font = game_font, screen = screen, x=width/2-100, y= height/2-50, width= 200, height = 50, text = "Press any key")
 #Reset sprite audio button
 resetButton = textBox(name="reset", font = game_font,screen = screen, x=251, y = height-100, width = 250, height = 50, text = "Reset Sprite Audio")
+#Duplicate sprite button
+duplicateButton = textBox(name="duplicate", font = game_font, screen = screen, x=501, y= height-100, width= 250, height = 50, text = "Duplicate")
 
 
 #Slider labels
@@ -72,6 +73,7 @@ sliders = [volume_slider,pitch_slider,speed_slider]
 def clickButton(x, y):
     #Button click checks need to be first so they don't set selected_sprite to None
     #If add-a-sprite button is clicked
+    global selected_sprite
     if addSpriteButton.within(x, y):
         image = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sprites\\")
         sound = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sounds\\")
@@ -96,7 +98,16 @@ def clickButton(x, y):
             selected_sprite.pitch = 0.5
             selected_sprite.speed = 0.5
             selected_sprite.update_mod_sound_file()
-
+    elif duplicateButton.within(x,y):
+        if selected_sprite != None:
+            dup_sprite = audio_sprite(image_file=selected_sprite.image_file, sound_file=selected_sprite.orig_sound_file, width = selected_sprite.width, height=selected_sprite.height)
+            dup_sprite.volume = selected_sprite.volume
+            dup_sprite.pitch = selected_sprite.pitch
+            dup_sprite.speed = selected_sprite.speed
+            dup_sprite.update_mod_sound_file()
+            sprites.append(dup_sprite)
+            selected_sprite = dup_sprite
+        
 
     elif keyButton.within(x, y) and selected_sprite != None:
         flag=True
@@ -222,9 +233,9 @@ while True:
             audio_functions.deleteOutfiles()
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN: 
+            
             #click buttons
             clickButton(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
-
 
             # There are 3 steps to dragging. 
             # 1. on MOUSEBUTTONDOWN, set selected_sprite/dragging_slider to what was clicked
@@ -234,6 +245,8 @@ while True:
                 selected_sprite = check_drag_sprite()
             if selected_sprite == None:
                 dragging_slider = None
+            
+            
             
         elif event.type == pygame.MOUSEBUTTONUP: 
 
