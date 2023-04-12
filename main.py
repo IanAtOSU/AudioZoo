@@ -20,6 +20,7 @@ clock = pygame.time.Clock()
 clock = pygame.time.Clock()
 size = width, height = 1400, 800
 screen = pygame.display.set_mode(size)
+
 BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (width,height))
 
 #sprite setup
@@ -44,10 +45,12 @@ loopSpriteButton = textBox(name="loopSprite", font = game_font, screen = screen,
 #change background button
 changeBGButton = textBox(name="changeBG", font = game_font, screen = screen, x=1, y= height-100, width= 250, height = 50, text = "Change background")
 #key button binds sprite.play to different keyboard input
+
 keyButton = textBox(name="changeKey", font = game_font, screen = screen, x=501, y= height-100, width= 75, height = 50, text = "g")
 changeKeyNotif = textBox(name="changeKeyNotif", font = game_font, screen = screen, x=width/2-100, y= height/2-50, width= 200, height = 50, text = "Press any key")
 #Reset sprite audio button
 resetButton = textBox(name="reset", font = game_font,screen = screen, x=251, y = height-100, width = 250, height = 50, text = "Reset Sprite Audio")
+
 
 #Slider labels
 volume_label = textBox(name="vol_lab", font = small_font,screen = screen, x=width-500,y=height-30,width=50,height=20,text="Volume")
@@ -61,7 +64,8 @@ speed_slider = slider(screen, name="Speed",y=height-70)
 
 
 buttons = [addSpriteButton, removeSpriteButton, changeBGButton,
-            loopSpriteButton, volume_label,pitch_label,speed_label, resetButton, keyButton]
+            loopSpriteButton, volume_label,pitch_label,speed_label,
+              resetButton, keyButton, duplicateButton]
 sliders = [volume_slider,pitch_slider,speed_slider]
 
 #Handles button clicks. x,y is given mousePosition
@@ -176,13 +180,16 @@ for i in gif_list:
 os.chdir('../')
 
 
+
 #game loop
 while True:    
     #Update Button Text
     if selected_sprite == None:
         loopSpriteButton.text = "Looping: N/A"
+        duplicateButton.text = "N/A"
         keyButton.text = "N/A"
     else:
+        duplicateButton.text = "Duplicate"
         keyButton.text = pygame.key.name(selected_sprite.key)
         if selected_sprite.looping == -1: #-1 means is looping
             loopSpriteButton.text = "Looping: Y"
@@ -217,6 +224,7 @@ while True:
         elif event.type == pygame.MOUSEBUTTONDOWN: 
             #click buttons
             clickButton(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
+
 
             # There are 3 steps to dragging. 
             # 1. on MOUSEBUTTONDOWN, set selected_sprite/dragging_slider to what was clicked
