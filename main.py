@@ -21,7 +21,9 @@ clock = pygame.time.Clock()
 #set up screen
 clock = pygame.time.Clock()
 size = width, height = 1400, 800
-screen = pygame.display.set_mode(size)
+#screen = pygame.display.set_mode(size)
+screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
+
 BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400,800))
 
 
@@ -407,6 +409,11 @@ while True:
                 drag_sprite(event.pos[0], event.pos[1])
             if dragging_slider != None:
                 drag_slider(event.pos[0])
+
+        elif event.type == pygame.VIDEORESIZE:
+            width, height = event.size
+            screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
+            BG = pygame.transform.scale(BG, (width, height))
 
         for sprite in sprites:
             if pygame.key.get_pressed()[sprite.key]:
