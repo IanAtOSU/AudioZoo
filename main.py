@@ -163,6 +163,7 @@ def drag_slider(mouse_x):
 #Measure bar setup
 played_already = set([])
 measure_stick = pygame.Rect(100, 4, 6, 160)
+bar_moving=True
 
 #sprite dancing setup (Make GIFs a directory of PNGs)
 directory = './Sprites/'
@@ -283,6 +284,9 @@ while True:
                 drag_sprite(event.pos[0], event.pos[1])
             if dragging_slider != None:
                 drag_slider(event.pos[0])
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                bar_moving=(not bar_moving)
 
     #Play sprites with keystrokes
     for sprite in sprites:
@@ -295,21 +299,22 @@ while True:
 
     #move measure stick
     pygame.draw.rect(screen, "Red", measure_stick)
-    if measure_stick.x < width-20:
-        measure_stick.x = measure_stick.x + 2
-    else:
-        measure_stick.x = 100
-        if measure_stick.y <= (height-measure_stick.height-200):
-            measure_stick.y += measure_stick.height+4
+    if bar_moving:
+        if measure_stick.x < width-20:
+            measure_stick.x = measure_stick.x + 2
         else:
-            measure_stick.y = 4
-        played_already = set([]) #empty the played already list
+            measure_stick.x = 100
+            if measure_stick.y <= (height-measure_stick.height-200):
+                measure_stick.y += measure_stick.height+4
+            else:
+                measure_stick.y = 4
+            played_already = set([]) #empty the played already list
 
     pygame.draw.rect(screen, "Black", pygame.Rect(100, 0, 10, height))
 
     #Draw Sprites
     for i in range(len(sprites)):
-        if (sprites[i].rect.colliderect(measure_stick) and sprites[i] not in played_already):
+        if (sprites[i].rect.colliderect(measure_stick) and sprites[i] not in played_already and bar_moving and not(sprites[i]==selected_sprite and dragging_sprite)):
             sprites[i].play()
             played_already.add(sprites[i])
         screen.blit(sprites[i].image, sprites[i].rect)
