@@ -107,10 +107,13 @@ def clickButton(x, y):
             selected_sprite.update_mod_sound_file()
     elif duplicateButton.within(x,y):
         if selected_sprite != None:
-            dup_sprite = audio_sprite(image_file=selected_sprite.image_file, sound_file=selected_sprite.orig_sound_file, width = selected_sprite.width, height=selected_sprite.height)
+            dup_sprite = audio_sprite(image_file=selected_sprite.image_file, sound_file=selected_sprite.orig_sound_file, 
+                                      width = selected_sprite.width, height=selected_sprite.height)
             dup_sprite.volume = selected_sprite.volume
             dup_sprite.pitch = selected_sprite.pitch
             dup_sprite.speed = selected_sprite.speed
+            dup_sprite.rect.x = selected_sprite.rect.x + 8
+            dup_sprite.rect.y = selected_sprite.rect.y
             dup_sprite.update_mod_sound_file()
             sprites.append(dup_sprite)
             selected_sprite = dup_sprite
@@ -123,42 +126,42 @@ def clickButton(x, y):
             saveFile.write(spriteData)
     elif loadButton.within(x,y):
         loadLocation = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\SaveFiles\\")
-        '''if loadLocation.find(".cvs", len(loadLocation)-6) == -1:
+        if not loadLocation.endswith('.csv'):
             print(loadLocation)
             print("ERROR! INVALID SAVE FILE!")
-        else:'''
-        loadFile = open(loadLocation, "r")
-        #9 commas
-        for row in loadFile:
-            spriteData = []
-            ind = row.find(',')
-            lastInd = ind+1
-            spriteData.append(row[0:ind])
-            #Import sprite data into array
-            for _ in range(9):
-                ind = row.find(',', lastInd)
-                spriteData.append(row[lastInd:ind])
+        else:
+            loadFile = open(loadLocation, "r")
+            #9 commas
+            for row in loadFile:
+                spriteData = []
+                ind = row.find(',')
                 lastInd = ind+1
-            #Correct types within array
-            for i in range(4):
-                spriteData[i] = int(spriteData[i])
-            for i in range(4, 6):
-                spriteData[i] = str(spriteData[i])
-            for i in range(6, 9):
-                spriteData[i] = float(spriteData[i])
-            #Generate new sprite
-            newSprite = audio_sprite(image_file=spriteData[4], sound_file=spriteData[5])
-            sprites.append(newSprite)
-            #Fix sprite's data to match the loaded sprite
-            newSprite.rect.x = spriteData[0]
-            newSprite.rect.y = spriteData[1]
-            newSprite.width = spriteData[2]
-            newSprite.height = spriteData[3]
-            newSprite.volume = spriteData[6]
-            newSprite.pitch = spriteData[7]
-            newSprite.speed = spriteData[8]
-            newSprite.frame = spriteData[9]
-            newSprite.update_mod_sound_file()
+                spriteData.append(row[0:ind])
+                #Import sprite data into array
+                for _ in range(9):
+                    ind = row.find(',', lastInd)
+                    spriteData.append(row[lastInd:ind])
+                    lastInd = ind+1
+                #Correct types within array
+                for i in range(4):
+                    spriteData[i] = int(spriteData[i])
+                for i in range(4, 6):
+                    spriteData[i] = str(spriteData[i])
+                for i in range(6, 9):
+                    spriteData[i] = float(spriteData[i])
+                #Generate new sprite
+                newSprite = audio_sprite(image_file=spriteData[4], sound_file=spriteData[5])
+                sprites.append(newSprite)
+                #Fix sprite's data to match the loaded sprite
+                newSprite.rect.x = spriteData[0]
+                newSprite.rect.y = spriteData[1]
+                newSprite.width = spriteData[2]
+                newSprite.height = spriteData[3]
+                newSprite.volume = spriteData[6]
+                newSprite.pitch = spriteData[7]
+                newSprite.speed = spriteData[8]
+                newSprite.frame = spriteData[9]
+                newSprite.update_mod_sound_file()
                 
 
 
