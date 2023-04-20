@@ -12,6 +12,7 @@ import csv
 import audio_functions
 from classes import audio_sprite, slider, textBox
 
+
 #pygame Initialization
 pygame.init()
 pygame.mixer.init()
@@ -21,13 +22,28 @@ clock = pygame.time.Clock()
 #screen setup
 clock = pygame.time.Clock()
 size = width, height = 1400, 800
-screen = pygame.display.set_mode(size)
 
-BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (width,height))
+#screen = pygame.display.set_mode(size)
+screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
+
+BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (1400,800))
+
+
+class sprite():
+    def __init__(self, image_file, sound_file, width = 90, height = 90, initPos=(100,200)):
+        self.initPos = initPos
+        self.width = width
+        self.height = height
+
+        self.image_file = image_file
+        self.image = pygame.transform.scale(pygame.image.load(self.image_file), (self.width, self.height))
+        self.rect = self.image.get_rect()
+
 
 #sprite setup
 sprites = [audio_sprite("SpriteFrames/duck/0.png", "Sounds/Drums/mixkit-drum-bass-hit-2294.wav"), audio_sprite("SpriteFrames/theCage/0.png", "Sounds/Flute/mixkit-game-flute-bonus-2313.wav")]
 selected_sprite = sprites[0]
+
 
 #dragging variables setup
 dragging_sprite = False
@@ -59,6 +75,10 @@ saveButton = textBox(name="save", font = game_font, screen = screen, x=width-70,
 loadButton = textBox(name="load", font = game_font, screen = screen, x=width-140, y= 1, width= 70, height = 50, text = "Load")
 
 
+#Create slider
+volume_slider = slider()#previously(300, 700, 600)
+#size_slider = slider()
+#size_slider = slider(minX=width-450, maxX=width-50, y=height-43, color=(115,105,215), slidercolor=[0,200,50])
 #Slider labels
 volume_label = textBox(name="vol_lab", font = small_font,screen = screen, x=width-460,y=height-30,width=50,height=20,text="Volume")
 pitch_label = textBox(name="pit_lab", font = small_font, screen = screen, x=width-460,y=height-55,width=50,height=20,text="Pitch")
@@ -202,6 +222,10 @@ def check_drag_slider():
             sliders.remove(tmp)
             sliders.append(tmp)
             break #only interact with the first sprite found
+
+        # check if the size slider was clicked
+        #elif size_slider.rect.collidepoint(pygame.mouse.get_pos()):
+            #selected_slider = size_slider
     return tmp
 
 def drag_sprite(mouse_x, mouse_y):
@@ -290,6 +314,7 @@ while True:
             audio_functions.deleteOutfiles()
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN: 
+
             
             #click buttons
             clickButton(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
