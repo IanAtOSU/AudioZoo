@@ -344,6 +344,8 @@ while True:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 bar_moving=(not bar_moving)
+            elif event.key == pygame.K_DELETE and selected_sprite != None:
+                sprites.remove(selected_sprite)
 
     #Play sprites with keystrokes
     for sprite in sprites:
