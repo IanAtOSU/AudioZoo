@@ -76,10 +76,6 @@ loadButton = textBox(name="load", font = game_font, screen = screen, x=width-140
 
 
 #Create slider
-volume_slider = slider()#previously(300, 700, 600)
-#size_slider = slider()
-#size_slider = slider(minX=width-450, maxX=width-50, y=height-43, color=(115,105,215), slidercolor=[0,200,50])
-#Slider labels
 volume_label = textBox(name="vol_lab", font = small_font,screen = screen, x=width-460,y=height-30,width=50,height=20,text="Volume")
 pitch_label = textBox(name="pit_lab", font = small_font, screen = screen, x=width-460,y=height-55,width=50,height=20,text="Pitch")
 speed_label = textBox(name="sped_lab", font = small_font, screen = screen, x=width-460,y=height-80,width=50,height=20,text="Speed")
