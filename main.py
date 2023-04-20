@@ -15,6 +15,7 @@ from classes import audio_sprite, slider, textBox
 #pygame Initialization
 pygame.init()
 pygame.mixer.init()
+pygame.mixer.set_num_channels(100)
 pygame.font.init()
 clock = pygame.time.Clock()
 
