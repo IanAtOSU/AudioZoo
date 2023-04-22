@@ -35,7 +35,7 @@ def changeVolume(audio_path, sprite_hash, multiplier):
 #Pitches the audio file up or down
 def changePitch(audio_path, sprite_hash, multiplier):
     Hz_shift = (multiplier-0.5)*1200 #range of change from -600 to +600 Hertz
-    audioIn = wave.open(audio_path, 'r')
+    audioIn = wave.open(audio_path, 'rb')
     p = list(audioIn.getparams())
     p[3] = 0 #(Number of samples will be set by writeframes)
 
