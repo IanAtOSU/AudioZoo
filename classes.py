@@ -9,7 +9,7 @@ import imghdr
 import audio_functions
 
 class audio_sprite():
-    def __init__(self, image_file="Sprites/sprite0.gif", sound_file="Sounds/metalgear.wav", width = 90, height = 90, initPos=(100,200)):
+    def __init__(self, image_file="Sprites/boxdude.png", sound_file="Sounds/Meme/metalgear.wav", width = 90, height = 90, initPos=(100,200)):
 
         self.initPos = initPos
         self.width = width
