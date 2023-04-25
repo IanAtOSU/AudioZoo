@@ -76,12 +76,18 @@ class audio_sprite():
         if self.speed != 0.5:
             self.mod_sound_file = audio_functions.changeSpeed(self.mod_sound_file, id(self), self.speed)
 
+    def saveState(self, curX, curY):
+        ret = (str(curX)+","+str(curY)+","+str(self.width)+","+str(self.height)
+               +","+str(self.image_file)+","+str(self.orig_sound_file)
+               +","+str(self.volume)+","+str(self.pitch)+","+str(self.speed)+","+str(self.frame)+"\n")
+        return ret
+
     def __del__(self):
         None
 
 
 class slider():
-    def __init__(self, screen, name="", minX=1400-450, maxX=1400-50, y=800-20,color=(115,105,215),slidercolor=[0,200,50]):
+    def __init__(self, screen, name="", minX=1400-410, maxX=1400-10, y=800-20,color=(115,105,215),slidercolor=[0,200,50]):
         if minX > maxX or minX < 0 or maxX > 900:
             ValueError
         self.name=name

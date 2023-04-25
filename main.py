@@ -5,6 +5,8 @@ import math
 import tkinter.filedialog
 from PIL import Image
 import imghdr
+from datetime import datetime
+import csv
 
 #Our Files
 import audio_functions
@@ -13,6 +15,7 @@ from classes import audio_sprite, slider, textBox
 #pygame Initialization
 pygame.init()
 pygame.mixer.init()
+pygame.mixer.set_num_channels(100)
 pygame.font.init()
 clock = pygame.time.Clock()
 
@@ -24,7 +27,7 @@ screen = pygame.display.set_mode(size)
 BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (width,height))
 
 #sprite setup
-sprites = [audio_sprite("SpriteFrames/duck/0.png", "Sounds/Drums/mixkit-drum-bass-hit-2294.wav"), audio_sprite("SpriteFrames/theCage/0.png", "Sounds/Flute/mixkit-game-flute-bonus-2313.wav")]
+sprites = [audio_sprite("SpriteFrames/speakerman/0.png", "Sounds/Drums/mixkit-drum-bass-hit-2294.wav"), audio_sprite("SpriteFrames/boxman/0.png", "Sounds/Flute/mixkit-game-flute-bonus-2313.wav")]
 selected_sprite = sprites[0]
 
 #dragging variables setup
@@ -51,29 +54,34 @@ changeKeyNotif = textBox(name="changeKeyNotif", font = game_font, screen = scree
 resetButton = textBox(name="reset", font = game_font,screen = screen, x=251, y = height-100, width = 250, height = 50, text = "Reset Sprite Audio")
 #Duplicate sprite button
 duplicateButton = textBox(name="duplicate", font = game_font, screen = screen, x=501, y= height-100, width= 250, height = 50, text = "Duplicate")
+#Save game button
+saveButton = textBox(name="save", font = game_font, screen = screen, x=width-70, y= 1, width= 70, height = 50, text = "Save")
+#Load game save button
+loadButton = textBox(name="load", font = game_font, screen = screen, x=width-140, y= 1, width= 70, height = 50, text = "Load")
 
 
 #Slider labels
-volume_label = textBox(name="vol_lab", font = small_font,screen = screen, x=width-500,y=height-30,width=50,height=20,text="Volume")
-pitch_label = textBox(name="pit_lab", font = small_font, screen = screen, x=width-500,y=height-55,width=50,height=20,text="Pitch")
-speed_label = textBox(name="sped_lab", font = small_font, screen = screen, x=width-500,y=height-80,width=50,height=20,text="Speed")
+volume_label = textBox(name="vol_lab", font = small_font,screen = screen, x=width-460,y=height-30,width=50,height=20,text="Volume")
+pitch_label = textBox(name="pit_lab", font = small_font, screen = screen, x=width-460,y=height-55,width=50,height=20,text="Pitch")
+speed_label = textBox(name="sped_lab", font = small_font, screen = screen, x=width-460,y=height-80,width=50,height=20,text="Speed")
 
 #Create sliders
-volume_slider = slider(screen, name="Volume",y=height-20)#previously(300, 700, 600)
+volume_slider = slider(screen, name="Volume",y=height-20) #previously(300, 700, 600)
 pitch_slider = slider(screen, name="Pitch",y=height-45)
 speed_slider = slider(screen, name="Speed",y=height-70)
 
 
 buttons = [addSpriteButton, removeSpriteButton, changeBGButton,
             loopSpriteButton, volume_label,pitch_label,speed_label,
-              resetButton, keyButton, duplicateButton]
+              resetButton, keyButton, duplicateButton,
+              saveButton, loadButton]
 sliders = [volume_slider,pitch_slider,speed_slider]
 
 #Handles button clicks. x,y is given mousePosition
 def clickButton(x, y):
     #Button click checks need to be first so they don't set selected_sprite to None
     #If add-a-sprite button is clicked
-    global selected_sprite
+    global selected_sprite, sprites
     if addSpriteButton.within(x, y):
         image = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sprites\\")
         sound = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sounds\\")
@@ -100,14 +108,63 @@ def clickButton(x, y):
             selected_sprite.update_mod_sound_file()
     elif duplicateButton.within(x,y):
         if selected_sprite != None:
-            dup_sprite = audio_sprite(image_file=selected_sprite.image_file, sound_file=selected_sprite.orig_sound_file, width = selected_sprite.width, height=selected_sprite.height)
+            dup_sprite = audio_sprite(image_file=selected_sprite.image_file, sound_file=selected_sprite.orig_sound_file, 
+                                      width = selected_sprite.width, height=selected_sprite.height)
             dup_sprite.volume = selected_sprite.volume
             dup_sprite.pitch = selected_sprite.pitch
             dup_sprite.speed = selected_sprite.speed
+            dup_sprite.rect.x = selected_sprite.rect.x + 8
+            dup_sprite.rect.y = selected_sprite.rect.y
             dup_sprite.update_mod_sound_file()
             sprites.append(dup_sprite)
             selected_sprite = dup_sprite
-        
+    elif saveButton.within(x,y):
+        now = datetime.now()
+        now = now.strftime("%Y-%m-%d-%H%M%S")
+        saveFile = open("SaveFiles/AudioZooSave"+str(now)+".csv", "w")
+        for s in sprites:
+            spriteData = s.saveState(s.rect.x, s.rect.y)
+            saveFile.write(spriteData)
+    elif loadButton.within(x,y):
+        loadLocation = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\SaveFiles\\")
+        if not loadLocation.endswith('.csv'):
+            print(loadLocation)
+            print("ERROR! INVALID SAVE FILE!")
+        else:
+            loadFile = open(loadLocation, "r")
+            #9 commas
+            for row in loadFile:
+                spriteData = []
+                ind = row.find(',')
+                lastInd = ind+1
+                spriteData.append(row[0:ind])
+                #Import sprite data into array
+                for _ in range(9):
+                    ind = row.find(',', lastInd)
+                    spriteData.append(row[lastInd:ind])
+                    lastInd = ind+1
+                #Correct types within array
+                for i in range(4):
+                    spriteData[i] = int(spriteData[i])
+                for i in range(4, 6):
+                    spriteData[i] = str(spriteData[i])
+                for i in range(6, 9):
+                    spriteData[i] = float(spriteData[i])
+                #Generate new sprite
+                newSprite = audio_sprite(image_file=spriteData[4], sound_file=spriteData[5])
+                sprites.append(newSprite)
+                #Fix sprite's data to match the loaded sprite
+                newSprite.rect.x = spriteData[0]
+                newSprite.rect.y = spriteData[1]
+                newSprite.width = spriteData[2]
+                newSprite.height = spriteData[3]
+                newSprite.volume = spriteData[6]
+                newSprite.pitch = spriteData[7]
+                newSprite.speed = spriteData[8]
+                newSprite.frame = spriteData[9]
+                newSprite.update_mod_sound_file()
+                
+
 
     elif keyButton.within(x, y) and selected_sprite != None:
         flag=True
@@ -287,6 +344,8 @@ while True:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 bar_moving=(not bar_moving)
+            elif event.key == pygame.K_DELETE and selected_sprite != None:
+                sprites.remove(selected_sprite)
 
     #Play sprites with keystrokes
     for sprite in sprites:
