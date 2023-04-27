@@ -174,6 +174,9 @@ def clickButton(x, y):
                 if event2.type == pygame.KEYDOWN:
                     selected_sprite.key  = event2.key
                     flag = False
+    else:#no buttons clicked
+        return False
+    return True#some button clicked
 
 #loops through sprites, if a sprite is clicked, we return that sprite and set initspritepos and initmousepos apprpriately
 def check_drag_sprite(): 
@@ -293,13 +296,13 @@ while True:
         elif event.type == pygame.MOUSEBUTTONDOWN: 
             
             #click buttons
-            clickButton(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
+            button_clicked=clickButton(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
 
             # There are 3 steps to dragging. 
             # 1. on MOUSEBUTTONDOWN, set selected_sprite/dragging_slider to what was clicked
             # 2. on MOUSEMOTION, if dragging then drag selected_sprite/dragging_slider from their inital positions (initspritepos/initsliderpos)
             # 3. on MOUSEBUTTONUP, we drop them into place and apply any effects from the drag (like removing sprites, changing volumes, etc)
-            if (check_drag_slider() == None):
+            if (check_drag_slider() == None and not button_clicked):
                 selected_sprite = check_drag_sprite()
             if selected_sprite == None:
                 dragging_slider = None
