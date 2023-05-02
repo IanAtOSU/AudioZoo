@@ -34,20 +34,29 @@ class testSpriteMethods(unittest.TestCase):
         self.sprite1.volume = 0.75
         self.sprite1.update_mod_sound_file()
         self.assertNotEqual(before, self.sprite1.mod_sound_file)
+        self.sprite1.volume = 0.5
+        self.sprite1.update_mod_sound_file()
+        self.assertEqual(before, self.sprite1.mod_sound_file)
 
     def test_speed_change(self):
         before = self.sprite1.mod_sound_file
         self.sprite1.speed = 0.75
         self.sprite1.update_mod_sound_file()
         self.assertNotEqual(before, self.sprite1.mod_sound_file)
+        self.sprite1.speed = 0.5
+        self.sprite1.update_mod_sound_file()
+        self.assertEqual(before, self.sprite1.mod_sound_file)
 
     def test_pitch_change(self):
         before = self.sprite1.mod_sound_file
         self.sprite1.pitch = 0.75
         self.sprite1.update_mod_sound_file()
         self.assertNotEqual(before, self.sprite1.mod_sound_file)
+        self.sprite1.pitch = 0.5
+        self.sprite1.update_mod_sound_file()
+        self.assertEqual(before, self.sprite1.mod_sound_file)
 
-    def test_audio_reset(self):
+    def test_all_audio_effects(self):
         before = self.sprite1.mod_sound_file
         self.sprite1.volume = 0.3
         self.sprite1.pitch = 0.85
@@ -60,6 +69,9 @@ class testSpriteMethods(unittest.TestCase):
         self.sprite1.update_mod_sound_file()
         self.assertEqual(before, self.sprite1.mod_sound_file, "Failed to reset mod_sound_file")
 
+    def test_sprite_duplication(self):
+        dup_sprite = self.sprite1.duplicate()
+        self.assertEqual(dup_sprite.mod_sound_file, self.sprite1.mod_sound_file)
 
     def test_nothing(self):
         pass

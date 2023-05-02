@@ -82,6 +82,17 @@ class audio_sprite():
                +","+str(self.volume)+","+str(self.pitch)+","+str(self.speed)+","+str(self.frame)+"\n")
         return ret
 
+    def duplicate(self):
+        dup_sprite = audio_sprite(image_file=self.image_file, sound_file=self.orig_sound_file, 
+                                      width = self.width, height=self.height)
+        dup_sprite.volume = self.volume
+        dup_sprite.pitch = self.pitch
+        dup_sprite.speed = self.speed
+        dup_sprite.rect.x = self.rect.x + 8
+        dup_sprite.rect.y = self.rect.y
+        dup_sprite.update_mod_sound_file()
+        return dup_sprite
+
     def __del__(self):
         None
 

@@ -108,14 +108,7 @@ def clickButton(x, y):
             selected_sprite.update_mod_sound_file()
     elif duplicateButton.within(x,y):
         if selected_sprite != None:
-            dup_sprite = audio_sprite(image_file=selected_sprite.image_file, sound_file=selected_sprite.orig_sound_file, 
-                                      width = selected_sprite.width, height=selected_sprite.height)
-            dup_sprite.volume = selected_sprite.volume
-            dup_sprite.pitch = selected_sprite.pitch
-            dup_sprite.speed = selected_sprite.speed
-            dup_sprite.rect.x = selected_sprite.rect.x + 8
-            dup_sprite.rect.y = selected_sprite.rect.y
-            dup_sprite.update_mod_sound_file()
+            dup_sprite = selected_sprite.duplicate() 
             sprites.append(dup_sprite)
             selected_sprite = dup_sprite
     elif saveButton.within(x,y):
