@@ -27,7 +27,7 @@ screen = pygame.display.set_mode(size)
 BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (width,height))
 
 #sprite setup
-sprites = [audio_sprite("SpriteFrames/speakerman/0.png", "Sounds/Drums/mixkit-drum-bass-hit-2294.wav"), audio_sprite("SpriteFrames/boxman/0.png", "Sounds/Flute/mixkit-game-flute-bonus-2313.wav")]
+sprites = [audio_sprite("SpriteFrames/baldmiles/0.png", "Sounds/Drums/mixkit-drum-bass-hit-2294.wav"), audio_sprite("SpriteFrames/balloon/0.png", "Sounds/Flute/mixkit-game-flute-bonus-2313.wav")]
 selected_sprite = sprites[0]
 
 #dragging variables setup
@@ -242,12 +242,11 @@ for i in gif_list:
             os.chdir('../SpriteFrames') #into sprite frames directory ***DIR
             os.mkdir(temp[0]) 
             os.chdir("../SpriteFrames/" + temp[0]) #into new gif directory ***DIR
-            for x in range(8):
-                im.seek(im.n_frames // 8 * x)
+            for x in range(3):
+                im.seek(im.n_frames // 3 * x)
                 im.save('{}.png'.format(x)) # make 8 png files of gif
             im.close()
             os.chdir('../../Sprites') #back into /Sprites ***DIR
-
 #change cwd back to home directory
 os.chdir('../')
 
@@ -285,7 +284,9 @@ while True:
     for i in range(len(sprites)):
         if (sprites[i].looping == -1):
             if (sprites[i].folderCheck()):
-                sprites[i].dance()
+                sprites[i].buffer += 1
+                if sprites[i].buffer % 9 == 0:
+                    sprites[i].dance()
             continue
     
     #Event loop
