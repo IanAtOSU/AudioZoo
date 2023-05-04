@@ -121,9 +121,15 @@ def clickButton(x, y):
     elif saveButton.within(x,y):
         now = datetime.now()
         now = now.strftime("%Y-%m-%d-%H%M%S")
-        saveFile = open("SaveFiles/AudioZooSave"+str(now)+".csv", "w")
+        spriteData=""
+        write=True
         for s in sprites:
-            spriteData = s.saveState(s.rect.x, s.rect.y)
+            if s.saveState(s.rect.x,s.rect.y):
+                spriteData+=s.saveState(s.rect.x, s.rect.y)
+            else:
+                write=False
+        if write:
+            saveFile = open("SaveFiles/AudioZooSave"+str(now)+".csv", "w")
             saveFile.write(spriteData)
     elif loadButton.within(x,y):
         loadLocation = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\SaveFiles\\")
