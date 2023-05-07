@@ -15,6 +15,7 @@ from classes import audio_sprite, slider, textBox
 #pygame Initialization
 pygame.init()
 pygame.mixer.init()
+pygame.mixer.set_num_channels(100)
 pygame.font.init()
 clock = pygame.time.Clock()
 
@@ -185,6 +186,7 @@ def clickButton(x, y):
                         s.key  = event2.key
                         flag = False
 
+
 #loops through sprites, if a sprite is clicked, we return that sprite and set initspritepos and initmousepos apprpriately
 def check_drag_sprite(): 
     global sprites, dragging_sprite, initmousepos, initspritepos
@@ -249,12 +251,11 @@ for i in gif_list:
             os.chdir('../SpriteFrames') #into sprite frames directory ***DIR
             os.mkdir(temp[0]) 
             os.chdir("../SpriteFrames/" + temp[0]) #into new gif directory ***DIR
-            for x in range(8):
-                im.seek(im.n_frames // 8 * x)
+            for x in range(3):
+                im.seek(im.n_frames // 3 * x)
                 im.save('{}.png'.format(x)) # make 8 png files of gif
             im.close()
             os.chdir('../../Sprites') #back into /Sprites ***DIR
-
 #change cwd back to home directory
 os.chdir('../')
 
@@ -292,7 +293,9 @@ while True:
     for i in range(len(sprites)):
         if (sprites[i].looping == -1):
             if (sprites[i].folderCheck()):
-                sprites[i].dance()
+                sprites[i].buffer += 1
+                if sprites[i].buffer % 9 == 0:
+                    sprites[i].dance()
             continue
     
     #Event loop
@@ -303,7 +306,7 @@ while True:
         elif event.type == pygame.MOUSEBUTTONDOWN: 
             
             #click buttons
-            clickButton(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
+            button_clicked=clickButton(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
 
             # There are 3 steps to dragging. 
             # 1. on MOUSEBUTTONDOWN, set selected_sprites/dragging_slider to what was clicked
@@ -348,6 +351,9 @@ while True:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 bar_moving=(not bar_moving)
+            elif event.key == pygame.K_DELETE and selected_sprite != None:
+                sprites.remove(selected_sprite)
+                selected_sprite=None
 
     #Play sprites with keystrokes
     for sprite in sprites:
