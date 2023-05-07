@@ -35,7 +35,6 @@ selected_sprites.append(sprites[0])
 dragging_sprite = False
 dragging_slider = None
 initmousepos=[0,0]#initial position of mouse when clicking on sprite, used to calculate where the sprite should be
-initspritepos=[0,0]#initial position of sprite when clicking on sprite
 
 #Textboxes, Buttons, and Sliders
 game_font=pygame.font.SysFont("Times New Roman",30)
@@ -77,6 +76,8 @@ buttons = [addSpriteButton, removeSpriteButton, changeBGButton,
               resetButton, keyButton, duplicateButton,
               saveButton, loadButton]
 sliders = [volume_slider,pitch_slider,speed_slider]
+
+select_mult = False
 
 #Handles button clicks. x,y is given mousePosition
 def clickButton(x, y):
@@ -189,15 +190,18 @@ def clickButton(x, y):
         return False
     return True#some button clicked
 
-#loops through sprites, if a sprite is clicked, we return that sprite and set initspritepos and initmousepos apprpriately
+#loops through sprites, if a sprite is clicked, we return that sprite and set sprites pre_drag_pos and initmousepos apprpriately
 def check_drag_sprite(): 
-    global sprites, dragging_sprite, initmousepos, initspritepos
-    tmp = []
+    global sprites, dragging_sprite, initmousepos, select_mult
+    if select_mult:
+        tmp = selected_sprites
+    else:
+        tmp = []
     for i in range(len(sprites)-1,-1,-1):#prioritize sprites displayed last/on top
         if sprites[i].rect.collidepoint(pygame.mouse.get_pos()):
             dragging_sprite = True
             initmousepos=[event.pos[0],event.pos[1]]
-            initspritepos=[sprites[i].rect.x,sprites[i].rect.y]
+            sprites[i].pre_drag_pos = (sprites[i].rect.x, sprites[i].rect.y)
             tmp.append(sprites[i]) #give the object clicked on top priority
             sprites.remove(tmp[len(tmp)-1])
             sprites.append(tmp[len(tmp)-1])
@@ -222,8 +226,9 @@ def check_drag_slider():
     return tmp
 
 def drag_sprite(mouse_x, mouse_y):
-    sprites[len(sprites)-1].rect.x = initspritepos[0]+mouse_x-initmousepos[0]
-    sprites[len(sprites)-1].rect.y = initspritepos[1]+mouse_y-initmousepos[1]
+    for s in selected_sprites:
+        s.rect.x = s.pre_drag_pos[0]+mouse_x-initmousepos[0]
+        s.rect.y = s.pre_drag_pos[1]+mouse_y-initmousepos[1]
 
 def drag_slider(mouse_x):
     if mouse_x > sliders[len(sliders)-1].maxX:
@@ -263,7 +268,15 @@ for i in gif_list:
 #change cwd back to home directory
 os.chdir('../')
 
-
+def sprite_dancing():
+    global sprites
+    for i in range(len(sprites)):	
+        if (sprites[i].looping == -1):	
+            if (sprites[i].folderCheck()):	
+                sprites[i].buffer += 1	
+                if sprites[i].buffer % 9 == 0:	
+                    sprites[i].dance()	
+            continue
 
 #game loop
 while True:    
@@ -294,13 +307,7 @@ while True:
             i.set_level(0.5)
 
     #Dancing Sprites	
-    for i in range(len(sprites)):	
-        if (sprites[i].looping == -1):	
-            if (sprites[i].folderCheck()):	
-                sprites[i].buffer += 1	
-                if sprites[i].buffer % 9 == 0:	
-                    sprites[i].dance()	
-            continue
+    sprite_dancing()
     
     #Event loop
     for event in pygame.event.get():
@@ -308,12 +315,11 @@ while True:
             audio_functions.deleteOutfiles()
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN: 
-            
             #click buttons
             clickButton(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
             # There are 3 steps to dragging. 
             # 1. on MOUSEBUTTONDOWN, set selected_sprites/dragging_slider to what was clicked
-            # 2. on MOUSEMOTION, if dragging then drag selected_sprites/dragging_slider from their inital positions (initspritepos/initsliderpos)
+            # 2. on MOUSEMOTION, if dragging then drag selected_sprites/dragging_slider from their inital positions (pre_drag_pos/initsliderpos)
             # 3. on MOUSEBUTTONUP, we drop them into place and apply any effects from the drag (like removing sprites, changing volumes, etc)
             if (check_drag_slider() == None):
                 selected_sprites = check_drag_sprite()
@@ -338,8 +344,12 @@ while True:
             elif abs(event.pos[0]-initmousepos[0]) < 5 and abs(event.pos[1]-initmousepos[1]) < 5 and len(selected_sprites) >= 1:
                 for s in selected_sprites:
                     s.play()
-                    s.rect.x = initspritepos[0]
-                    s.rect.y = initspritepos[1]
+                    s.rect.x = s.pre_drag_pos[0]
+                    s.rect.y = s.pre_drag_pos[1]
+            #if a sprite was dragged
+            else:
+                for s in selected_sprites:
+                    s.pre_drag_pos = (s.rect.x, s.rect.y)
             dragging_sprite = False
 
 
@@ -352,9 +362,15 @@ while True:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 bar_moving=(not bar_moving)
+            elif event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL or event.key == pygame.K_LSHIFT:
+                select_mult = True
             elif event.key == pygame.K_DELETE and len(selected_sprites):
-                sprites.remove(selected_sprites)
+                for s in selected_sprites:
+                    sprites.remove(s)
                 selected_sprites=[]
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL or event.key == pygame.K_LSHIFT:
+                select_mult = False
 
     #Play sprites with keystrokes
     for sprite in sprites:

@@ -28,6 +28,8 @@ class audio_sprite():
         self.frame = 0
         self.buffer = 0
 
+        self.pre_drag_pos = ()
+
 
         self.looping = 0 #0 = not looping; -1 = is looping
         # RC: Added Code
