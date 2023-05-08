@@ -80,16 +80,12 @@ class audio_sprite():
             self.mod_sound_file = audio_functions.changeSpeed(self.mod_sound_file, id(self), self.speed)
 
     def saveState(self, curX, curY):
-        if "Sounds" in self.orig_sound_file and "Sprite" in self.image_file:
-            stripped_sound=self.orig_sound_file[self.orig_sound_file.index("Sounds"):]
-            stripped_image=self.image_file[self.image_file.index("Sprite"):]
-            ret = (str(curX)+","+str(curY)+","+str(self.width)+","+str(self.height)
-                   +","+str(self.image_file)+","+str(self.orig_sound_file)
-                   +","+str(self.volume)+","+str(self.pitch)+","+str(self.speed)+","+str(self.frame)+"\n")
-            return ret
-        else:
-            print("Error! "+str(self.orig_sound_file)+" or "+str(self.image_file)+" is invalid!")
-            return False
+        dir_path = os.path.dirname(os.path.realpath(__file__))+'\\'
+        sound_path=self.orig_sound_file
+        image_path=self.image_file
+        if dir_path in self.orig_sound_file:
+                +","+str(self.volume)+","+str(self.pitch)+","+str(self.speed)+","+str(self.frame)+"\n")
+        return ret
     def __del__(self):
         None
 
