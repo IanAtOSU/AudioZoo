@@ -3,10 +3,10 @@ Like a zoo, but for sounds
 
 # How to run AudioZoo youself
 Developer Option:
-- navigate to the directory you wish to store audiozoo
-- git clone this github repo
-- use pip check/install to install any missing dependencies
-- Run the code with 'python main.py'
+1. navigate to the directory you wish to store audiozoo
+2. git clone this github repo
+3. use pip check/install to install any missing dependencies
+4. Run the code with 'python main.py'
 
 Traditional Option:
 - Download the latest release of AudioZoo (in the releases section of this project repository)
@@ -15,14 +15,14 @@ Traditional Option:
 
 # How to use AudioZoo to create your own music (Use-case Example)
 1. Add any necessary sound files to the AudioZoo/Sounds folder
-  - AudioZoo comes preloaded with guitar, bass, flute, bell, and drum sounds.
-  - The Sounds/Out/ folder is used for temporary storage of manipulated audio. Any Sounds stored here will be deleted on exit of the AudioZoo application
+    - AudioZoo comes preloaded with guitar, bass, flute, bell, and drum sounds.
+    - The Sounds/Out/ folder is used for temporary storage of manipulated audio. Any Sounds stored here will be deleted on exit of the AudioZoo application
 2. Add Sprites to the screen
-  - click the 'add sprite' button. A file dialog will prompt you to select an image file (.jpg, .png, .gif) and an audio file (.wav)
-  - After selecting both image and audio files, your new sprite will appear on screen
+    - click the 'add sprite' button. A file dialog will prompt you to select an image file (.jpg, .png, .gif) and an audio file (.wav)
+    - After selecting both image and audio files, your new sprite will appear on screen
 4. Play their audio by clicking their image, placing them in front of the measure bar, or pressing their assigned key-binding
-  - Sprites will play only once per measure, or once per click
-  - Every sprite has a default key-binding of 'g'
+    - Sprites will play only once per measure, or once per click
+    - Every sprite has a default key-binding of 'g'
 5. Select a Sprite by clicking or moving their image
     - Click the 'Loop' button to make their audio repeat after playing (again to stop playing)
     - Adjust their audio playback with the pitch/speed/volume sliders
@@ -31,11 +31,11 @@ Traditional Option:
     - Change their key-binding by clicking the 'change-key' button (default value shown as 'g' on screen)
     - Remove the sprite by pressing the 'delete' key, or dragging them over the 'Remove a Sprite' button
 6. Select multiple sprites with 'ctrl + click'
-  - All the options listed above are still available, their effect will apply to all sprites selected.
+    - All the options listed above are still available, their effect will apply to all sprites selected.
 7. Arrange sprites to make songs with the measure bar, practice your piano skills with key presses, or just click sprites for fun
 8. Once finished, be sure to click the 'save state' button to save all your progress
-  - The state of the game will be stored in the AudioZoo/SaveFiles/ folder
-  - To load a previously saved state, simply click the 'load state' button, which will prompt you to select a save file from which to load
+    - The state of the game will be stored in the AudioZoo/SaveFiles/ folder
+    - To load a previously saved state, simply click the 'load state' button, which will prompt you to select a save file from which to load
 
 # AudioZoo Build
 AudioZoo uses two main python libraries, pygame and pydub.
