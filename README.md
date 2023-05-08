@@ -9,9 +9,9 @@ Developer Option:
 4. Run the code with 'python main.py'
 
 Traditional Option:
-- Download the latest release of AudioZoo (in the releases section of this project repository)
-- Unzip the contents
-- Run the AudioZoo.exe file
+1. Download the latest release of AudioZoo (in the releases section of this project repository)
+2. Unzip the contents
+3. Run the AudioZoo.exe file
 
 # How to use AudioZoo to create your own music (Use-case Example)
 1. Add any necessary sound files to the AudioZoo/Sounds folder
@@ -39,18 +39,18 @@ Traditional Option:
 
 # AudioZoo Build
 AudioZoo uses two main python libraries, pygame and pydub.
-● Pygame is used for rendering game GUI features (sprites, buttons, sliders, etc)
-● Pydub is used for manipulating audio files, changing their speed, pitch, and volume.
+- Pygame is used for rendering game GUI features (sprites, buttons, sliders, etc)
+- Pydub is used for manipulating audio files, changing their speed, pitch, and volume.
 A full working list of python libraries used in AudioZoo exists here:
-- Pygame
-- Pydub
-- numpy
-- PIL
-- imghdr
-- audioop
-- datetime
-- sys
-- os
+    - Pygame
+    - Pydub
+    - numpy
+    - PIL
+    - imghdr
+    - audioop
+    - datetime
+    - sys
+    - os
 
 # How to Contribute
 Fork the Repository. It's completely open source!
