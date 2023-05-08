@@ -26,6 +26,9 @@ class audio_sprite():
         self.pitch = 0.5 
         self.speed = 0.5
         self.frame = 0
+        self.buffer = 0
+
+        self.pre_drag_pos = ()
 
 
         self.looping = 0 #0 = not looping; -1 = is looping
@@ -43,7 +46,7 @@ class audio_sprite():
                 self.playing = True
 
     def dance(self):
-        if self.frame == 7:
+        if self.frame == 2:
             self.frame = 0
         else:
             self.frame += 1
