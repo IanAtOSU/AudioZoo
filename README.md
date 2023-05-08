@@ -41,6 +41,7 @@ Traditional Option:
 AudioZoo uses two main python libraries, pygame and pydub.
 - Pygame is used for rendering game GUI features (sprites, buttons, sliders, etc)
 - Pydub is used for manipulating audio files, changing their speed, pitch, and volume.
+
 A full working list of python libraries used in AudioZoo exists here:
     - Pygame
     - Pydub
