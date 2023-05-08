@@ -13,7 +13,7 @@ Traditional Option:
 2. Unzip the contents
 3. Run the AudioZoo.exe file
 
-# How to use AudioZoo to create your own music (Use-case Example)
+# How to use AudioZoo to create your own music
 1. Add any necessary sound files to the AudioZoo/Sounds folder
     - AudioZoo comes preloaded with guitar, bass, flute, bell, and drum sounds.
     - The Sounds/Out/ folder is used for temporary storage of manipulated audio. Any Sounds stored here will be deleted on exit of the AudioZoo application
@@ -37,12 +37,13 @@ Traditional Option:
     - The state of the game will be stored in the AudioZoo/SaveFiles/ folder
     - To load a previously saved state, simply click the 'load state' button, which will prompt you to select a save file from which to load
 
-# AudioZoo Build
+# AudioZoo Libraries
 AudioZoo uses two main python libraries, pygame and pydub.
 - Pygame is used for rendering game GUI features (sprites, buttons, sliders, etc)
 - Pydub is used for manipulating audio files, changing their speed, pitch, and volume.
 
 A full working list of python libraries used in AudioZoo exists here:
+
     - Pygame
     - Pydub
     - numpy
