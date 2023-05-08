@@ -24,12 +24,12 @@ Traditional Option:
   - Sprites will play only once per measure, or once per click
   - Every sprite has a default key-binding of 'g'
 5. Select a Sprite by clicking or moving their image
-    ● Click the 'Loop' button to make their audio repeat after playing (again to stop playing)
-    ● Adjust their audio playback with the pitch/speed/volume sliders
-    ● Click the 'Reset Sprite Audio' button to reset their audio adjustments (pitch/speed/volume)
-    ● Click the 'Duplicate' button to create an identitcal copy of the selected sprite
-    ● Change their key-binding by clicking the 'change-key' button (default value shown as 'g' on screen)
-    ● Remove the sprite by pressing the 'delete' key, or dragging them over the 'Remove a Sprite' button
+    - Click the 'Loop' button to make their audio repeat after playing (again to stop playing)
+    - Adjust their audio playback with the pitch/speed/volume sliders
+    - Click the 'Reset Sprite Audio' button to reset their audio adjustments (pitch/speed/volume)
+    - Click the 'Duplicate' button to create an identitcal copy of the selected sprite
+    - Change their key-binding by clicking the 'change-key' button (default value shown as 'g' on screen)
+    - Remove the sprite by pressing the 'delete' key, or dragging them over the 'Remove a Sprite' button
 6. Select multiple sprites with 'ctrl + click'
   - All the options listed above are still available, their effect will apply to all sprites selected.
 7. Arrange sprites to make songs with the measure bar, practice your piano skills with key presses, or just click sprites for fun
