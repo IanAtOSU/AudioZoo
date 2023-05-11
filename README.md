@@ -1,7 +1,7 @@
 # AudioZoo
 Like a zoo, but for sounds
 
-AudioZoo is an audio manipulation game that makes creating music much more entertaining and rewarding than working with traditional software. Unlike many other music creation products, Audio Zoo is easy to understand and requires no previous experience with audio editing to get started. Colorful characters and backgrounds light up the screen, while Audio Zoo's modular and flexible design ensure that you can use it to create anything you can imagine! Beginners and teachers alike can benefit from this free and open source game that teaches the basics of audio manipulation.
+AudioZoo is an audio manipulation game that makes creating music much more entertaining and rewarding than working with traditional audio editing software. Unlike many other music creation products, Audio Zoo is easy to understand and requires no previous experience with audio editing to get started. Colorful characters and backgrounds light up the screen, while Audio Zoo's modular and flexible design ensure that you can use it to create anything you can imagine! Beginners and teachers alike can benefit from this free and open source game that teaches the basics of audio manipulation.
 
 # How to run AudioZoo youself
 Developer Option:
