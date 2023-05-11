@@ -41,7 +41,7 @@ def changePitch(audio_path, sprite_hash, multiplier):
 
     outpath = "Sounds/Out/PitchOut_" + str(sprite_hash) + audio_path[audio_path.rfind("/")+1:]
 
-    audioOut = wave.open(outpath, 'w')
+    audioOut = wave.open(outpath, 'wb')
     audioOut.setparams(tuple(p))
 
     #Audio processing:
