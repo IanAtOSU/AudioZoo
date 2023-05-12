@@ -26,6 +26,7 @@ Traditional Option:
     - Sprites will play only once per measure, or once per click (unless looping)
     - Every sprite has a default key-binding of 'g'
 5. Select a Sprite by clicking or moving their image
+    - A red box will appear around the sprite(s) you have selected
     - Click the 'Loop' button to make their audio repeat after playing (again to stop playing)
     - Adjust their audio playback with the pitch/speed/volume sliders
     - Click the 'Reset Sprite Audio' button to reset their audio adjustments (pitch/speed/volume)
