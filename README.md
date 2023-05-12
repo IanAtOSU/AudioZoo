@@ -23,7 +23,7 @@ Traditional Option:
     - click the 'add sprite' button. A file dialog will prompt you to select an image file (.jpg, .png, .gif) and an audio file (.wav)
     - After selecting both image and audio files, your new sprite will appear on screen
 4. Play their audio by clicking their image, placing them in front of the measure bar, or pressing their assigned key-binding
-    - Sprites will play only once per measure, or once per click
+    - Sprites will play only once per measure, or once per click (unless looping)
     - Every sprite has a default key-binding of 'g'
 5. Select a Sprite by clicking or moving their image
     - Click the 'Loop' button to make their audio repeat after playing (again to stop playing)
