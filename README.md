@@ -58,7 +58,8 @@ A full working list of python libraries used in AudioZoo exists here:
 
 # How to Contribute
 Fork the Repository. It's completely open source!
-Code format overview: Architecture Diagram
+![image](https://github.com/TAssassinIT/AudioZoo/assets/37788709/3b331ca6-b970-4aaa-9ff1-2c53b1aa0b7d)
+
 Future Development Roadmap
 
 # Credits/Acknowledgements
