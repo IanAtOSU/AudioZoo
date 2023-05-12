@@ -58,9 +58,22 @@ A full working list of python libraries used in AudioZoo exists here:
 
 # How to Contribute
 Fork the Repository. It's completely open source!
+
+Here is an architecture diagram to help better understand our code.
 ![image](https://github.com/TAssassinIT/AudioZoo/assets/37788709/3b331ca6-b970-4aaa-9ff1-2c53b1aa0b7d)
 
-Future Development Roadmap
+There are some helpful comments inside functions and classes that document intended functionality.
+Also included is a unit_test.py, which executes some basic testing protocols.
+Simply run unit_test.py inside the AudioZoo home directory with your favorite python compiler to test any modifications made.
+
+We encourage anyone who is interested to contribute to this project!
+
+# Future Development Roadmap
+    - Compatability with more audio file formats (currently, only .wav is supported)
+    - Export projects to audio files
+    - More audio functions (such as reverb and reverse effects)
+    - Improve user interface (such as dialog boxes for sprite settings instead of buttons)
+    - Window resizing
 
 # Credits/Acknowledgements
 AudioZoo Team: Ian Tassin, Miles Wedemeyer, Andrew Saueran, Dillon Nguyen, Reece Clifford
