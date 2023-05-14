@@ -83,7 +83,7 @@ select_mult = False
 def clickButton(x, y):
     #Button click checks need to be first so they don't set selected_sprites to None
     #If add-a-sprite button is clicked
-    global selected_sprites, sprites
+    global selected_sprites, sprites, BG
     if addSpriteButton.within(x, y):
         image = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sprites\\")
         sound = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sounds\\")
@@ -100,7 +100,7 @@ def clickButton(x, y):
     elif changeBGButton.within(x, y):
         BG_temp = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Background\\")
         if BG_temp != '':
-            BG = pygame.transform.scale(pygame.image.load(BG_temp), (1400,800))
+            BG = pygame.transform.scale(pygame.image.load(BG_temp), (width,height))
     elif resetButton.within(x, y):
         if len(selected_sprites):
             for s in sliders:
