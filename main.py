@@ -213,7 +213,7 @@ def check_drag_sprite():
             sprites.append(tmp[len(tmp)-1])
             break #only interact with the first sprite found
         
-    if tmp == [] and select_mult:
+    if tmp == [] and select_mult or tmp == [] and buttonClicked:
         tmp = selected_sprites
     return tmp
 
@@ -323,7 +323,7 @@ while True:
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN: 
             #click buttons
-            clickButton(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
+            buttonClicked = clickButton(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
 
             # There are 3 steps to dragging. 
             # 1. on MOUSEBUTTONDOWN, set selected_sprites/dragging_slider to what was clicked
