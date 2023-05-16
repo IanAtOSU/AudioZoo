@@ -406,7 +406,7 @@ while True:
 
     #Draw Sprites
     for i in range(len(sprites)):
-        if (sprites[i].rect.colliderect(measure_stick) and sprites[i] not in played_already and bar_moving and not(sprites[i]==selected_sprites and dragging_sprite)):
+        if (sprites[i].rect.colliderect(measure_stick) and sprites[i] not in played_already and bar_moving and not(sprites[i] in selected_sprites and dragging_sprite)):
             sprites[i].play()
             played_already.add(sprites[i])
         screen.blit(sprites[i].image, sprites[i].rect)
