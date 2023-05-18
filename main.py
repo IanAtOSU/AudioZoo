@@ -27,7 +27,7 @@ screen = pygame.display.set_mode(size)
 BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (width,height))
 
 #sprite setup
-sprites = [audio_sprite("SpriteFrames/baldmiles/0.png", "Sounds/Drums/mixkit-drum-bass-hit-2294.wav"), audio_sprite("SpriteFrames/balloon/0.png", "Sounds/Flute/mixkit-game-flute-bonus-2313.wav")]
+sprites = [audio_sprite("SpriteFrames/bananaman/0.png", "Sounds/Drums/mixkit-drum-bass-hit-2294.wav"), audio_sprite("SpriteFrames/cactusman/0.png", "Sounds/Flute/mixkit-game-flute-bonus-2313.wav")]
 selected_sprites = []
 selected_sprites.append(sprites[0])
 
@@ -83,7 +83,7 @@ select_mult = False
 def clickButton(x, y):
     #Button click checks need to be first so they don't set selected_sprites to None
     #If add-a-sprite button is clicked
-    global selected_sprites, sprites, BG
+    global selected_sprites, sprites
     if addSpriteButton.within(x, y):
         image = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sprites\\")
         sound = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sounds\\")
@@ -100,7 +100,7 @@ def clickButton(x, y):
     elif changeBGButton.within(x, y):
         BG_temp = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Background\\")
         if BG_temp != '':
-            BG = pygame.transform.scale(pygame.image.load(BG_temp), (width,height))
+            BG = pygame.transform.scale(pygame.image.load(BG_temp), (1400,800))
     elif resetButton.within(x, y):
         if len(selected_sprites):
             for s in sliders:
@@ -212,8 +212,7 @@ def check_drag_sprite():
             sprites.remove(tmp[len(tmp)-1])
             sprites.append(tmp[len(tmp)-1])
             break #only interact with the first sprite found
-        
-    if tmp == [] and select_mult or tmp == [] and buttonClicked:
+    if tmp == []:
         tmp = selected_sprites
     return tmp
 
@@ -269,7 +268,7 @@ for i in gif_list:
             os.chdir("../SpriteFrames/" + temp[0]) #into new gif directory ***DIR
             for x in range(3):
                 im.seek(im.n_frames // 3 * x)
-                im.save('{}.png'.format(x)) # make 8 png files of gif
+                im.save('{}.png'.format(x)) # make 3 png files of gif
             im.close()
             os.chdir('../../Sprites') #back into /Sprites ***DIR
 #change cwd back to home directory
@@ -323,8 +322,7 @@ while True:
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN: 
             #click buttons
-            buttonClicked = clickButton(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
-
+            clickButton(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
             # There are 3 steps to dragging. 
             # 1. on MOUSEBUTTONDOWN, set selected_sprites/dragging_slider to what was clicked
             # 2. on MOUSEMOTION, if dragging then drag selected_sprites/dragging_slider from their inital positions (pre_drag_pos/initsliderpos)
@@ -406,7 +404,7 @@ while True:
 
     #Draw Sprites
     for i in range(len(sprites)):
-        if (sprites[i].rect.colliderect(measure_stick) and sprites[i] not in played_already and bar_moving and not(sprites[i] in selected_sprites and dragging_sprite)):
+        if (sprites[i].rect.colliderect(measure_stick) and sprites[i] not in played_already and bar_moving and not(sprites[i]==selected_sprites and dragging_sprite)):
             sprites[i].play()
             played_already.add(sprites[i])
         screen.blit(sprites[i].image, sprites[i].rect)
