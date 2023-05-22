@@ -27,14 +27,14 @@ screen = pygame.display.set_mode(size)
 BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (width,height))
 
 #sprite setup
-sprites = [audio_sprite("SpriteFrames/speakerman/0.png", "Sounds/Drums/mixkit-drum-bass-hit-2294.wav"), audio_sprite("SpriteFrames/boxman/0.png", "Sounds/Flute/mixkit-game-flute-bonus-2313.wav")]
-selected_sprite = sprites[0]
+sprites = [audio_sprite("SpriteFrames/bananaman/0.png", "Sounds/Drums/mixkit-drum-bass-hit-2294.wav"), audio_sprite("SpriteFrames/cactusman/0.png", "Sounds/Flute/mixkit-game-flute-bonus-2313.wav")]
+selected_sprites = []
+selected_sprites.append(sprites[0])
 
 #dragging variables setup
 dragging_sprite = False
 dragging_slider = None
 initmousepos=[0,0]#initial position of mouse when clicking on sprite, used to calculate where the sprite should be
-initspritepos=[0,0]#initial position of sprite when clicking on sprite
 
 #Textboxes, Buttons, and Sliders
 game_font=pygame.font.SysFont("Times New Roman",30)
@@ -77,46 +77,67 @@ buttons = [addSpriteButton, removeSpriteButton, changeBGButton,
               saveButton, loadButton]
 sliders = [volume_slider,pitch_slider,speed_slider]
 
+select_mult = False
+
 #Handles button clicks. x,y is given mousePosition
 def clickButton(x, y):
-    #Button click checks need to be first so they don't set selected_sprite to None
+    #Button click checks need to be first so they don't set selected_sprites to None
     #If add-a-sprite button is clicked
-    global selected_sprite, sprites
+    global selected_sprites, sprites
     if addSpriteButton.within(x, y):
         image = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sprites\\")
         sound = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sounds\\")
         if image != '' and sound != '':
             sprites.append(audio_sprite(image_file=image, sound_file=sound))
     elif loopSpriteButton.within(x, y):
-        if selected_sprite != None:
-            if selected_sprite.looping == -1:
-                selected_sprite.stop()
-                selected_sprite.looping = 0
-            else:
-                selected_sprite.looping = -1
+        if len(selected_sprites):
+            for s in selected_sprites:
+                if s.looping == -1:
+                    s.stop()
+                    s.looping = 0
+                else:
+                    s.looping = -1
     elif changeBGButton.within(x, y):
         BG_temp = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Background\\")
         if BG_temp != '':
             BG = pygame.transform.scale(pygame.image.load(BG_temp), (1400,800))
     elif resetButton.within(x, y):
-        if selected_sprite != None:
+        if len(selected_sprites):
             for s in sliders:
                 s.set_level(0.5)
-            selected_sprite.volume = 0.5
-            selected_sprite.pitch = 0.5
-            selected_sprite.speed = 0.5
-            selected_sprite.update_mod_sound_file()
+            for s in selected_sprites:
+                s.volume = 0.5
+                s.pitch = 0.5
+                s.speed = 0.5
+                s.update_mod_sound_file()
     elif duplicateButton.within(x,y):
-        if selected_sprite != None:
-            dup_sprite = selected_sprite.duplicate() 
-            sprites.append(dup_sprite)
-            selected_sprite = dup_sprite
+
+        if len(selected_sprites):
+            new_selected_sprites = []
+            for s in selected_sprites:
+                dup_sprite = audio_sprite(image_file=s.image_file, sound_file=s.orig_sound_file, 
+                                        width = s.width, height=s.height)
+                dup_sprite.volume = s.volume
+                dup_sprite.pitch = s.pitch
+                dup_sprite.speed = s.speed
+                dup_sprite.rect.x = s.rect.x + 8
+                dup_sprite.rect.y = s.rect.y
+                dup_sprite.update_mod_sound_file()
+                sprites.append(dup_sprite)
+                new_selected_sprites.append(dup_sprite)
+            selected_sprites = new_selected_sprites
     elif saveButton.within(x,y):
         now = datetime.now()
         now = now.strftime("%Y-%m-%d-%H%M%S")
-        saveFile = open("SaveFiles/AudioZooSave"+str(now)+".csv", "w")
+        spriteData=""
+        write=True
         for s in sprites:
-            spriteData = s.saveState(s.rect.x, s.rect.y)
+            if s.saveState(s.rect.x,s.rect.y):
+                spriteData+=s.saveState(s.rect.x, s.rect.y)
+            else:
+                write=False
+        if write:
+            saveFile = open("SaveFiles/AudioZooSave"+str(now)+".csv", "w")
             saveFile.write(spriteData)
     elif loadButton.within(x,y):
         loadLocation = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\SaveFiles\\")
@@ -156,31 +177,44 @@ def clickButton(x, y):
                 newSprite.speed = spriteData[8]
                 newSprite.frame = spriteData[9]
                 newSprite.update_mod_sound_file()
-                
+    elif removeSpriteButton.within(x, y):
+        for s in selected_sprites:
+            selected_sprites.remove(s)
+            sprites.remove(s)
+            del s
 
 
-    elif keyButton.within(x, y) and selected_sprite != None:
+    elif keyButton.within(x, y) and len(selected_sprites):
         flag=True
         while flag:
             changeKeyNotif.draw()
             for event2 in pygame.event.get():
                 if event2.type == pygame.KEYDOWN:
-                    selected_sprite.key  = event2.key
-                    flag = False
+                    for s in selected_sprites:
+                        s.key  = event2.key
+                        flag = False
+    else:#no buttons clicked
+        return False
+    return True#some button clicked
 
-#loops through sprites, if a sprite is clicked, we return that sprite and set initspritepos and initmousepos apprpriately
+#loops through sprites, if a sprite is clicked, we return that sprite and set sprites pre_drag_pos and initmousepos apprpriately
 def check_drag_sprite(): 
-    global sprites, dragging_sprite, initmousepos, initspritepos
-    tmp = None
+    global sprites, dragging_sprite, initmousepos, select_mult
+    if select_mult:
+        tmp = selected_sprites
+    else:
+        tmp = []
     for i in range(len(sprites)-1,-1,-1):#prioritize sprites displayed last/on top
         if sprites[i].rect.collidepoint(pygame.mouse.get_pos()):
             dragging_sprite = True
             initmousepos=[event.pos[0],event.pos[1]]
-            initspritepos=[sprites[i].rect.x,sprites[i].rect.y]
-            tmp=sprites[i] #give the object clicked on top priority
-            sprites.remove(tmp)
-            sprites.append(tmp)
+            sprites[i].pre_drag_pos = (sprites[i].rect.x, sprites[i].rect.y)
+            tmp.append(sprites[i]) #give the object clicked on top priority
+            sprites.remove(tmp[len(tmp)-1])
+            sprites.append(tmp[len(tmp)-1])
             break #only interact with the first sprite found
+    if tmp == []:
+        tmp = selected_sprites
     return tmp
 
 #loops through sliders, if a slider is clicked, we return that slider and set initsliderpos and initmousepos appropriately 
@@ -199,8 +233,9 @@ def check_drag_slider():
     return tmp
 
 def drag_sprite(mouse_x, mouse_y):
-    sprites[len(sprites)-1].rect.x = initspritepos[0]+mouse_x-initmousepos[0]
-    sprites[len(sprites)-1].rect.y = initspritepos[1]+mouse_y-initmousepos[1]
+    for s in selected_sprites:
+        s.rect.x = s.pre_drag_pos[0]+mouse_x-initmousepos[0]
+        s.rect.y = s.pre_drag_pos[1]+mouse_y-initmousepos[1]
 
 def drag_slider(mouse_x):
     if mouse_x > sliders[len(sliders)-1].maxX:
@@ -232,51 +267,54 @@ for i in gif_list:
             os.chdir('../SpriteFrames') #into sprite frames directory ***DIR
             os.mkdir(temp[0]) 
             os.chdir("../SpriteFrames/" + temp[0]) #into new gif directory ***DIR
-            for x in range(8):
-                im.seek(im.n_frames // 8 * x)
-                im.save('{}.png'.format(x)) # make 8 png files of gif
+            for x in range(3):
+                im.seek(im.n_frames // 3 * x)
+                im.save('{}.png'.format(x)) # make 3 png files of gif
             im.close()
             os.chdir('../../Sprites') #back into /Sprites ***DIR
-
 #change cwd back to home directory
 os.chdir('../')
 
-
+def sprite_dancing():
+    global sprites
+    for i in range(len(sprites)):	
+        if (sprites[i].looping == -1):	
+            if (sprites[i].folderCheck()):	
+                sprites[i].buffer += 1	
+                if sprites[i].buffer % 9 == 0:	
+                    sprites[i].dance()	
+            continue
 
 #game loop
 while True:    
     #Update Button Text
-    if selected_sprite == None:
+    if len(selected_sprites) == 0:
         loopSpriteButton.text = "Looping: N/A"
         duplicateButton.text = "N/A"
         keyButton.text = "N/A"
     else:
         duplicateButton.text = "Duplicate"
-        keyButton.text = pygame.key.name(selected_sprite.key)
-        if selected_sprite.looping == -1: #-1 means is looping
+        keyButton.text = pygame.key.name(selected_sprites[len(selected_sprites)-1].key)
+        if selected_sprites[len(selected_sprites)-1].looping == -1: #-1 means is looping
             loopSpriteButton.text = "Looping: Y"
         else:
             loopSpriteButton.text = "Looping: N"
     
-    #Update Slider levels
-    if selected_sprite != None and dragging_slider == None:
+	#Update Slider levels
+    if len(selected_sprites) and dragging_slider == None:
         for i in sliders:
             if i == volume_slider:
-                i.set_level(selected_sprite.volume)
+                i.set_level(selected_sprites[len(selected_sprites)-1].volume)
             if i == pitch_slider:
-                i.set_level(selected_sprite.pitch)
+                i.set_level(selected_sprites[len(selected_sprites)-1].pitch)
             if i == speed_slider:
-                i.set_level(selected_sprite.speed)
-    elif selected_sprite == None:
+                i.set_level(selected_sprites[len(selected_sprites)-1].speed)
+    elif len(selected_sprites) == 0:
         for i in sliders:
             i.set_level(0.5)
 
-    #Dancing Sprites
-    for i in range(len(sprites)):
-        if (sprites[i].looping == -1):
-            if (sprites[i].folderCheck()):
-                sprites[i].dance()
-            continue
+    #Dancing Sprites	
+    sprite_dancing()
     
     #Event loop
     for event in pygame.event.get():
@@ -284,48 +322,42 @@ while True:
             audio_functions.deleteOutfiles()
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN: 
-            
             #click buttons
             clickButton(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
-
             # There are 3 steps to dragging. 
-            # 1. on MOUSEBUTTONDOWN, set selected_sprite/dragging_slider to what was clicked
-            # 2. on MOUSEMOTION, if dragging then drag selected_sprite/dragging_slider from their inital positions (initspritepos/initsliderpos)
+            # 1. on MOUSEBUTTONDOWN, set selected_sprites/dragging_slider to what was clicked
+            # 2. on MOUSEMOTION, if dragging then drag selected_sprites/dragging_slider from their inital positions (pre_drag_pos/initsliderpos)
             # 3. on MOUSEBUTTONUP, we drop them into place and apply any effects from the drag (like removing sprites, changing volumes, etc)
             if (check_drag_slider() == None):
-                selected_sprite = check_drag_sprite()
-            if selected_sprite == None:
+                selected_sprites = check_drag_sprite()
+            if len(selected_sprites) == 0:
                 dragging_slider = None
             
             
             
         elif event.type == pygame.MOUSEBUTTONUP: 
-
-            #dragging
-            if dragging_sprite:
-                #If dragged under remove button
-                if removeSpriteButton.within(selected_sprite.rect.x, selected_sprite.rect.y):
-                    del selected_sprite
-                    sprites.remove(sprites[len(sprites)-1])
-                    selected_sprite = None
-                dragging_sprite = False
-
             #If we dragged a slider
             if dragging_slider != None:
-                if dragging_slider.name == "Volume":
-                    selected_sprite.volume = dragging_slider.get_level()
-                elif dragging_slider.name == "Pitch":
-                    selected_sprite.pitch = dragging_slider.get_level()
-                elif dragging_slider.name == "Speed":
-                    selected_sprite.speed = dragging_slider.get_level()
-                selected_sprite.update_mod_sound_file()
-
+                for s in selected_sprites:
+                    if dragging_slider.name == "Volume":
+                        s.volume = dragging_slider.get_level()
+                    elif dragging_slider.name == "Pitch":
+                        s.pitch = dragging_slider.get_level()
+                    elif dragging_slider.name == "Speed":
+                        s.speed = dragging_slider.get_level()
+                    s.update_mod_sound_file()
                 dragging_slider = None
             #if sprite is clicked and NOT dragged
-            elif abs(event.pos[0]-initmousepos[0]) < 5 and abs(event.pos[1]-initmousepos[1]) < 5 and selected_sprite != None:
-                selected_sprite.play()
-                sprites[len(sprites)-1].rect.x = initspritepos[0]
-                sprites[len(sprites)-1].rect.y = initspritepos[1] 
+            elif abs(event.pos[0]-initmousepos[0]) < 5 and abs(event.pos[1]-initmousepos[1]) < 5 and len(selected_sprites) >= 1:
+                for s in selected_sprites:
+                    s.play()
+                    s.rect.x = s.pre_drag_pos[0]
+                    s.rect.y = s.pre_drag_pos[1]
+            #if a sprite was dragged
+            else:
+                for s in selected_sprites:
+                    s.pre_drag_pos = (s.rect.x, s.rect.y)
+            dragging_sprite = False
 
 
         elif event.type == pygame.MOUSEMOTION:
@@ -337,8 +369,15 @@ while True:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 bar_moving=(not bar_moving)
-            elif event.key == pygame.K_DELETE and selected_sprite != None:
-                sprites.remove(selected_sprite)
+            elif event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL or event.key == pygame.K_LSHIFT:
+                select_mult = True
+            elif event.key == pygame.K_DELETE and len(selected_sprites):
+                for s in selected_sprites:
+                    sprites.remove(s)
+                selected_sprites=[]
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL or event.key == pygame.K_LSHIFT:
+                select_mult = False
 
     #Play sprites with keystrokes
     for sprite in sprites:
@@ -366,14 +405,14 @@ while True:
 
     #Draw Sprites
     for i in range(len(sprites)):
-        if (sprites[i].rect.colliderect(measure_stick) and sprites[i] not in played_already and bar_moving and not(sprites[i]==selected_sprite and dragging_sprite)):
+        if (sprites[i].rect.colliderect(measure_stick) and sprites[i] not in played_already and bar_moving and not(sprites[i]==selected_sprites and dragging_sprite)):
             sprites[i].play()
             played_already.add(sprites[i])
         screen.blit(sprites[i].image, sprites[i].rect)
-
     #Draw selected sprite border
-    if selected_sprite!=None:
-        pygame.draw.rect(screen,(255,0,0),selected_sprite.rect,1,)
+    if len(selected_sprites):
+        for s in selected_sprites:
+            pygame.draw.rect(screen,(255,0,0),s.rect,1)
     
     #Draw Buttons
     for button in buttons:
