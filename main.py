@@ -83,7 +83,7 @@ select_mult = False
 def clickButton(x, y):
     #Button click checks need to be first so they don't set selected_sprites to None
     #If add-a-sprite button is clicked
-    global selected_sprites, sprites
+    global selected_sprites, sprites, BG
     if addSpriteButton.within(x, y):
         image = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sprites\\")
         sound = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sounds\\")
@@ -100,7 +100,7 @@ def clickButton(x, y):
     elif changeBGButton.within(x, y):
         BG_temp = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Background\\")
         if BG_temp != '':
-            BG = pygame.transform.scale(pygame.image.load(BG_temp), (1400,800))
+            BG = pygame.transform.scale(pygame.image.load(BG_temp), (width,height))
     elif resetButton.within(x, y):
         if len(selected_sprites):
             for s in sliders:
@@ -212,7 +212,8 @@ def check_drag_sprite():
             sprites.remove(tmp[len(tmp)-1])
             sprites.append(tmp[len(tmp)-1])
             break #only interact with the first sprite found
-    if tmp == []:
+        
+    if tmp == [] and select_mult or tmp == [] and buttonClicked:
         tmp = selected_sprites
     return tmp
 
@@ -268,7 +269,7 @@ for i in gif_list:
             os.chdir("../SpriteFrames/" + temp[0]) #into new gif directory ***DIR
             for x in range(3):
                 im.seek(im.n_frames // 3 * x)
-                im.save('{}.png'.format(x)) # make 3 png files of gif
+                im.save('{}.png'.format(x)) # make 8 png files of gif
             im.close()
             os.chdir('../../Sprites') #back into /Sprites ***DIR
 #change cwd back to home directory
@@ -322,7 +323,8 @@ while True:
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN: 
             #click buttons
-            clickButton(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
+            buttonClicked = clickButton(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
+
             # There are 3 steps to dragging. 
             # 1. on MOUSEBUTTONDOWN, set selected_sprites/dragging_slider to what was clicked
             # 2. on MOUSEMOTION, if dragging then drag selected_sprites/dragging_slider from their inital positions (pre_drag_pos/initsliderpos)
