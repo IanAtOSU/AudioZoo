@@ -80,12 +80,11 @@ class audio_sprite():
             self.mod_sound_file = audio_functions.changeSpeed(self.mod_sound_file, id(self), self.speed)
 
     def saveState(self, curX, curY):
-        dir_path = os.path.dirname(os.path.realpath(__file__))+'\\'
-        sound_path=self.orig_sound_file
-        image_path=self.image_file
-        if dir_path in self.orig_sound_file:
-                +","+str(self.volume)+","+str(self.pitch)+","+str(self.speed)+","+str(self.frame)+"\n")
+        ret = (str(curX)+","+str(curY)+","+str(self.width)+","+str(self.height)
+               +","+str(self.image_file)+","+str(self.orig_sound_file)
+               +","+str(self.volume)+","+str(self.pitch)+","+str(self.speed)+","+str(self.frame)+"\n")
         return ret
+    
     def __del__(self):
         None
 

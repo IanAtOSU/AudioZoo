@@ -27,7 +27,7 @@ screen = pygame.display.set_mode(size)
 BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (width,height))
 
 #sprite setup
-sprites = [audio_sprite("SpriteFrames/baldmiles/0.png", "Sounds/Drums/mixkit-drum-bass-hit-2294.wav"), audio_sprite("SpriteFrames/balloon/0.png", "Sounds/Flute/mixkit-game-flute-bonus-2313.wav")]
+sprites = [audio_sprite("SpriteFrames/bananaman/0.png", "Sounds/Drums/mixkit-drum-bass-hit-2294.wav"), audio_sprite("SpriteFrames/cactusman/0.png", "Sounds/Flute/mixkit-game-flute-bonus-2313.wav")]
 selected_sprites = []
 selected_sprites.append(sprites[0])
 
@@ -83,7 +83,7 @@ select_mult = False
 def clickButton(x, y):
     #Button click checks need to be first so they don't set selected_sprites to None
     #If add-a-sprite button is clicked
-    global selected_sprites, sprites
+    global selected_sprites, sprites, BG
     if addSpriteButton.within(x, y):
         image = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sprites\\")
         sound = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Sounds\\")
@@ -100,7 +100,7 @@ def clickButton(x, y):
     elif changeBGButton.within(x, y):
         BG_temp = tkinter.filedialog.askopenfilename(initialdir = os.getcwd()+"\\Background\\")
         if BG_temp != '':
-            BG = pygame.transform.scale(pygame.image.load(BG_temp), (1400,800))
+            BG = pygame.transform.scale(pygame.image.load(BG_temp), (width,height))
     elif resetButton.within(x, y):
         if len(selected_sprites):
             for s in sliders:
@@ -212,7 +212,8 @@ def check_drag_sprite():
             sprites.remove(tmp[len(tmp)-1])
             sprites.append(tmp[len(tmp)-1])
             break #only interact with the first sprite found
-    if tmp == []:
+        
+    if tmp == [] and select_mult or tmp == [] and buttonClicked:
         tmp = selected_sprites
     return tmp
 
@@ -322,7 +323,8 @@ while True:
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN: 
             #click buttons
-            clickButton(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
+            buttonClicked = clickButton(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
+
             # There are 3 steps to dragging. 
             # 1. on MOUSEBUTTONDOWN, set selected_sprites/dragging_slider to what was clicked
             # 2. on MOUSEMOTION, if dragging then drag selected_sprites/dragging_slider from their inital positions (pre_drag_pos/initsliderpos)
