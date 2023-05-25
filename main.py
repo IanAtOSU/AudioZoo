@@ -164,7 +164,16 @@ def clickButton(x, y):
                 for i in range(6, 9):
                     spriteData[i] = float(spriteData[i])
                 #Generate new sprite
-                newSprite = audio_sprite(image_file=spriteData[4], sound_file=spriteData[5])
+                if os.path.exists(spriteData[4]):
+                    if os.path.exists(spriteData[5]):
+                        newSprite = audio_sprite(image_file=spriteData[4], sound_file=spriteData[5])
+                    else:
+                        print("Sound file not found: "+spriteData[5])
+                        continue
+                else:
+                    print("Image file not found: "+spriteData[4])
+                    continue
+                
                 sprites.append(newSprite)
                 #Fix sprite's data to match the loaded sprite
                 newSprite.rect.x = spriteData[0]
