@@ -5,10 +5,16 @@ block_cipher = None
 
 
 a = Analysis(
-    ['main.py'],
+    ['main.py', 'classes.py', 'audio_functions.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[
+        ('Sounds','Sounds'),
+        ('Sprites', 'Sprites'),
+        ('SpriteFrames/*/*.png', 'SpriteFrames'),
+        ('Background', 'Background'),
+        ('README.md', '.')
+    ],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

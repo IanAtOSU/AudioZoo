@@ -7,6 +7,7 @@ from PIL import Image
 import imghdr
 from datetime import datetime
 import csv
+import time
 
 #Our Files
 import audio_functions
@@ -24,10 +25,11 @@ clock = pygame.time.Clock()
 size = width, height = 1400, 800
 screen = pygame.display.set_mode(size)
 
+
 BG = pygame.transform.scale(pygame.image.load("./Background\Island1.png"), (width,height))
 
 #sprite setup
-sprites = [audio_sprite("SpriteFrames/bananaman/0.png", "Sounds/Drums/mixkit-drum-bass-hit-2294.wav"), audio_sprite("SpriteFrames/cactusman/0.png", "Sounds/Flute/mixkit-game-flute-bonus-2313.wav")]
+sprites = [audio_sprite("./Sprites/baldmiles.gif", "./Sounds/Meme/mcoof.wav")]
 selected_sprites = []
 selected_sprites.append(sprites[0])
 
